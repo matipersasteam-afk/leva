@@ -1,0 +1,233 @@
+rules_version = '2';
+
+// Reglas de LEVA. Todo lo que no está permitido explícitamente queda cerrado.
+// Roles por custom claim `role`: 'admin' | 'staff' (sin claim = jugador).
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    function isAdmin() {
+      return signedIn() && request.auth.token.get('role', '') == 'admin';
+    }
+
+    function isStaff() {
+      return signedIn() && request.auth.token.get('role', '') in ['admin', 'staff'];
+    }
+
+    function eventDoc(e) {
+      return /databases/$(database)/documents/events/$(e);
+    }
+
+    function categoryDoc(e, c) {
+      return /databases/$(database)/documents/events/$(e)/categories/$(c);
+    }
+
+    function regDoc(e, r) {
+      return /databases/$(database)/documents/events/$(e)/registrations/$(r);
+    }
+
+    function inviteDoc(code) {
+      return /databases/$(database)/documents/invites/$(code);
+    }
+
+    function publicStatus() {
+      return ['open', 'closed', 'live', 'finished'];
+    }
+
+    function eventOpen(e) {
+      let ev = get(eventDoc(e)).data;
+      return ev.status == 'open' && request.time < ev.registrationDeadline;
+    }
+
+    // Campos que el jugador puede editar de su perfil.
+    function editableKeys() {
+      return ['displayName', 'nickname', 'category', 'club', 'hand', 'position', 'photoUrl', 'updatedAt'];
+    }
+
+    function validProfile(d) {
+      return d.displayName is string
+        && d.displayName.size() >= 3 && d.displayName.size() <= 40
+        && (d.get('nickname', null) == null || (d.nickname is string && d.nickname.size() <= 20))
+        && d.category in ['tercera', 'cuarta', 'quinta', 'sexta', 'suma9']
+        && d.club is string && d.club.size() >= 1 && d.club.size() <= 40
+        && d.hand in ['diestra', 'zurda']
+        && d.position in ['drive', 'reves', 'ambas']
+        && (d.get('photoUrl', null) == null || d.photoUrl is string);
+    }
+
+    match /users/{uid} {
+      // Los perfiles se ven dentro de la app (invitar pareja, cuadro, rivales).
+      allow read: if signedIn();
+
+      // Alta: solo el dueño, con contadores en cero (los sube el servidor).
+      allow create: if isOwner(uid)
+        && request.resource.data.keys().hasOnly(editableKeys().concat(['rankingPoints', 'stats', 'ambassador', 'createdAt', 'schemaVersion']))
+        && validProfile(request.resource.data)
+        && request.resource.data.rankingPoints == 0
+        && request.resource.data.stats == {'tournaments': 0, 'titles': 0}
+        && request.resource.data.ambassador == false
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time;
+
+      // Edición: el dueño solo toca sus campos editables; ranking, stats y
+      // insignias nunca (fase 2 los escribe el servidor).
+      allow update: if isOwner(uid)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(editableKeys())
+        && validProfile(request.resource.data)
+        && request.resource.data.updatedAt == request.time;
+
+      allow update: if isAdmin();
+      allow delete: if false;
+
+      // Historial LEVA: lo escribe el servidor al cerrar cada torneo.
+      match /history/{eventId} {
+        allow read: if signedIn();
+        allow write: if false;
+      }
+    }
+
+    // ---------------- Eventos ----------------
+    // Públicos (también sin cuenta: TV y cuadro en vivo) salvo borradores.
+    match /events/{e} {
+      allow read: if resource.data.status in publicStatus() || isAdmin();
+      allow write: if isAdmin();
+
+      match /categories/{c} {
+        allow read: if get(eventDoc(e)).data.status in publicStatus() || isAdmin();
+        allow write: if isAdmin();
+
+        // Staff: solo los contadores de cupo (cancelar, pasar de la lista de espera).
+        allow update: if isStaff()
+          && request.resource.data.diff(resource.data).affectedKeys()
+               .hasOnly(['confirmedCount', 'waitlistCount'])
+          && request.resource.data.confirmedCount >= 0
+          && request.resource.data.waitlistCount >= 0
+          && request.resource.data.confirmedCount <= resource.data.capacity;
+
+        // Un jugador solo puede mover los contadores en +1, en la misma
+        // escritura en que crea SU inscripción (lastRegId la vincula).
+        allow update: if signedIn()
+          && request.resource.data.diff(resource.data).affectedKeys()
+               .hasOnly(['confirmedCount', 'waitlistCount', 'lastRegId'])
+          && !exists(regDoc(e, request.resource.data.lastRegId))
+          && existsAfter(regDoc(e, request.resource.data.lastRegId))
+          && getAfter(regDoc(e, request.resource.data.lastRegId)).data.playerUids[0] == request.auth.uid
+          && request.resource.data.confirmedCount + request.resource.data.waitlistCount
+               == resource.data.confirmedCount + resource.data.waitlistCount + 1;
+      }
+
+      // ---------------- Draw: grupos y partidos (públicos) ----------------
+      // Se leen sin cuenta (cuadro en vivo, TV) si el evento es público.
+      // En el M4 solo el admin los escribe (publicar draw); los resultados
+      // (juez y jugadores) se habilitan en el M6.
+      match /groups/{g} {
+        allow read: if get(eventDoc(e)).data.status in publicStatus() || isStaff();
+        allow write: if isAdmin();
+      }
+
+      match /matches/{m} {
+        allow read: if get(eventDoc(e)).data.status in publicStatus() || isStaff();
+        allow write: if isAdmin();
+      }
+
+      // ---------------- Inscripciones (privadas) ----------------
+      match /registrations/{r} {
+        function isMember() {
+          return signedIn() && request.auth.uid in resource.data.playerUids;
+        }
+
+        // El contador correcto subió en 1 y la categoría quedó vinculada.
+        function countersBumped(c, slot) {
+          let before = get(categoryDoc(e, c)).data;
+          let after = getAfter(categoryDoc(e, c)).data;
+          return after.lastRegId == r
+            && (slot == 'confirmed'
+                  ? before.confirmedCount < before.capacity
+                    && after.confirmedCount == before.confirmedCount + 1
+                    && after.waitlistCount == before.waitlistCount
+                  : before.confirmedCount >= before.capacity
+                    && after.waitlistCount == before.waitlistCount + 1
+                    && after.confirmedCount == before.confirmedCount);
+        }
+
+        allow read: if isMember() || isStaff();
+
+        // Alta: el capitán solo, esperando pareja, sin pago, al precio real.
+        allow create: if signedIn()
+          && eventOpen(e)
+          && request.resource.data.playerUids == [request.auth.uid]
+          && request.resource.data.players.size() == 1
+          && request.resource.data.status == 'pending_partner'
+          && request.resource.data.slot in ['confirmed', 'waitlist']
+          && request.resource.data.payment.status == 'pending'
+          && request.resource.data.payment.paidCents == 0
+          && request.resource.data.payment.amountCents
+               == get(categoryDoc(e, request.resource.data.categoryId)).data.priceCents
+          && countersBumped(request.resource.data.categoryId, request.resource.data.slot)
+          && getAfter(inviteDoc(request.resource.data.invite.code)).data.regId == r;
+
+        // La pareja acepta la invitación (no estaba en la inscripción).
+        allow update: if signedIn()
+          && !(request.auth.uid in resource.data.playerUids)
+          && resource.data.status == 'pending_partner'
+          && resource.data.playerUids.size() == 1
+          && request.resource.data.playerUids == [resource.data.playerUids[0], request.auth.uid]
+          && request.resource.data.players.size() == 2
+          && request.resource.data.diff(resource.data).affectedKeys()
+               .hasOnly(['playerUids', 'players', 'status', 'invite', 'updatedAt'])
+          && request.resource.data.invite.code == resource.data.invite.code
+          && (resource.data.invite.get('invitedUid', null) == null
+              || resource.data.invite.invitedUid == request.auth.uid)
+          && request.resource.data.status
+               == (resource.data.slot == 'waitlist' ? 'waitlist'
+                   : (resource.data.payment.status == 'paid' ? 'confirmed' : 'pending_payment'))
+          && getAfter(inviteDoc(resource.data.invite.code)).data.acceptedBy == request.auth.uid;
+
+        // Cada jugador edita solo SU disponibilidad.
+        allow update: if isMember()
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['availability', 'updatedAt'])
+          && request.resource.data.availability.diff(resource.data.availability).affectedKeys()
+               .hasOnly([request.auth.uid]);
+
+        // Elegir método de pago (por ahora solo en sede); el pago lo marca el staff.
+        allow update: if isMember()
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['payment', 'updatedAt'])
+          && request.resource.data.payment.diff(resource.data.payment).affectedKeys().hasOnly(['method'])
+          && request.resource.data.payment.method in ['venue'];
+
+        // Staff y admin: marcar pagos, cancelar, promover de la lista de espera.
+        allow update: if isStaff();
+        allow delete: if false;
+      }
+    }
+
+    // ---------------- Invitaciones de pareja ----------------
+    match /invites/{code} {
+      // Se lee con el código exacto (link) o si me invitaron por usuario.
+      allow get: if signedIn();
+      allow list: if signedIn() && resource.data.invitedUid == request.auth.uid;
+
+      allow create: if signedIn()
+        && request.resource.data.fromUid == request.auth.uid
+        && request.resource.data.used == false
+        && getAfter(regDoc(request.resource.data.eventId, request.resource.data.regId)).data.invite.code == code;
+
+      // Aceptar: otra persona, una sola vez.
+      allow update: if signedIn()
+        && resource.data.used == false
+        && resource.data.fromUid != request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['used', 'acceptedBy', 'acceptedAt'])
+        && request.resource.data.used == true
+        && request.resource.data.acceptedBy == request.auth.uid;
+
+      allow delete: if false;
+    }
+  }
+}

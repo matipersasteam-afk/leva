@@ -1,0 +1,36 @@
+name: leva
+description: "App oficial de torneos de pádel LEVA · Gente · Pádel · Experiencias."
+publish_to: 'none'
+
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.13.2
+
+dependencies:
+  cloud_firestore: ^7.0.0
+  firebase_auth: ^7.0.0
+  firebase_core: ^5.0.0
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  flutter_riverpod: ^3.4.3
+  go_router: ^18.1.1
+  intl: ^0.20.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+
+  # Archivo variable (OFL, ver assets/fonts/OFL.txt). Ejes: wdth 62–125, wght 100–900.
+  fonts:
+    - family: Archivo
+      fonts:
+        - asset: assets/fonts/Archivo.ttf
+        - asset: assets/fonts/Archivo-Italic.ttf
+          style: italic

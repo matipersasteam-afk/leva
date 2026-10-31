@@ -1,0 +1,7 @@
+# Negocio propio (productos de datos): nunca va al repositorio.
+privado/
+
+# Herramientas locales y cachés
+graphify-out/
+.firebase/
+.claude/

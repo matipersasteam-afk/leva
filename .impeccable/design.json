@@ -1,0 +1,802 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-22T14:23:26+00:00",
+  "title": "Design System: LEVA",
+  "extensions": {
+    "provenance": {
+      "source": "prototipo/leva-app.html (:root tokens, component classes, WAAPI motion in script)",
+      "brandValuesApproximate": true,
+      "placeholders": [
+        "shield logo (approximate SVG)",
+        "typographic portrait plates",
+        "'Logo sponsor' slots"
+      ],
+      "copyLocale": "es-MX",
+      "downstream": "Flutter ThemeData / ThemeExtension"
+    },
+    "colorMeta": {
+      "ink-0": {
+        "role": "neutral",
+        "displayName": "Ink 0 · Outer Night",
+        "canonical": "#06080D",
+        "oklch": "oklch(13.4% 0.012 264.7)",
+        "tonalRamp": [
+          "#06080D",
+          "#0A0D14",
+          "#0E1626",
+          "#132037",
+          "#1B2A4A",
+          "#24375F",
+          "#3A4F7A",
+          "#97A0B2"
+        ],
+        "approximate": true
+      },
+      "ink-1": {
+        "role": "neutral",
+        "displayName": "Ink 1 · Screen Ground",
+        "canonical": "#0A0D14",
+        "oklch": "oklch(15.9% 0.016 266.6)",
+        "tonalRamp": [
+          "#06080D",
+          "#0A0D14",
+          "#0E1626",
+          "#132037",
+          "#1B2A4A",
+          "#24375F",
+          "#3A4F7A",
+          "#97A0B2"
+        ],
+        "approximate": true
+      },
+      "ink-2": {
+        "role": "neutral",
+        "displayName": "Ink 2 · Surface",
+        "canonical": "#0E1626",
+        "oklch": "oklch(20.1% 0.034 263.4)",
+        "tonalRamp": [
+          "#06080D",
+          "#0A0D14",
+          "#0E1626",
+          "#132037",
+          "#1B2A4A",
+          "#24375F",
+          "#3A4F7A",
+          "#97A0B2"
+        ],
+        "approximate": true
+      },
+      "ink-3": {
+        "role": "neutral",
+        "displayName": "Ink 3 · Raised Surface",
+        "canonical": "#132037",
+        "oklch": "oklch(24.5% 0.048 261.2)",
+        "tonalRamp": [
+          "#06080D",
+          "#0A0D14",
+          "#0E1626",
+          "#132037",
+          "#1B2A4A",
+          "#24375F",
+          "#3A4F7A",
+          "#97A0B2"
+        ],
+        "approximate": true
+      },
+      "navy": {
+        "role": "secondary",
+        "displayName": "Shield Navy",
+        "canonical": "#1B2A4A",
+        "oklch": "oklch(28.9% 0.062 263.9)",
+        "tonalRamp": [
+          "#06080D",
+          "#0A0D14",
+          "#0E1626",
+          "#132037",
+          "#1B2A4A",
+          "#24375F",
+          "#3A4F7A",
+          "#97A0B2"
+        ],
+        "approximate": true
+      },
+      "navy-hi": {
+        "role": "secondary",
+        "displayName": "Navy High",
+        "canonical": "#24375F",
+        "oklch": "oklch(34.2% 0.075 263.7)",
+        "tonalRamp": [
+          "#06080D",
+          "#0A0D14",
+          "#0E1626",
+          "#132037",
+          "#1B2A4A",
+          "#24375F",
+          "#3A4F7A",
+          "#97A0B2"
+        ],
+        "approximate": true
+      },
+      "gold-700": {
+        "role": "primary",
+        "displayName": "Gold Shadow",
+        "canonical": "#8C6A2E",
+        "oklch": "oklch(54.6% 0.088 79.2)",
+        "tonalRamp": [
+          "#5E461C",
+          "#8C6A2E",
+          "#A07B36",
+          "#B88F42",
+          "#D4AF5A",
+          "#E3C579",
+          "#F3DC9A",
+          "#FAEFCF"
+        ],
+        "approximate": true
+      },
+      "gold-500": {
+        "role": "primary",
+        "displayName": "Gold Mid",
+        "canonical": "#D4AF5A",
+        "oklch": "oklch(77.0% 0.112 86.1)",
+        "tonalRamp": [
+          "#5E461C",
+          "#8C6A2E",
+          "#A07B36",
+          "#B88F42",
+          "#D4AF5A",
+          "#E3C579",
+          "#F3DC9A",
+          "#FAEFCF"
+        ],
+        "approximate": true,
+        "note": "Flat value only for strokes, dots, borders, icon tint. Areas use the gold gradient."
+      },
+      "gold-200": {
+        "role": "primary",
+        "displayName": "Champagne",
+        "canonical": "#F3DC9A",
+        "oklch": "oklch(89.8% 0.088 91.1)",
+        "tonalRamp": [
+          "#5E461C",
+          "#8C6A2E",
+          "#A07B36",
+          "#B88F42",
+          "#D4AF5A",
+          "#E3C579",
+          "#F3DC9A",
+          "#FAEFCF"
+        ],
+        "approximate": true
+      },
+      "tx-1": {
+        "role": "neutral",
+        "displayName": "Bone White",
+        "canonical": "#F6F4EF",
+        "oklch": "oklch(96.7% 0.007 88.6)",
+        "tonalRamp": [
+          "#0C0B08",
+          "#262521",
+          "#43423E",
+          "#63615D",
+          "#84827E",
+          "#A7A5A0",
+          "#CBC9C4",
+          "#F0EEE9"
+        ],
+        "approximate": true
+      },
+      "tx-2": {
+        "role": "neutral",
+        "displayName": "Steel",
+        "canonical": "#BAC1CF",
+        "oklch": "oklch(81.0% 0.021 264.4)",
+        "tonalRamp": [
+          "#070B14",
+          "#202530",
+          "#3C424E",
+          "#5B616E",
+          "#7C828F",
+          "#9EA5B3",
+          "#C2C9D7",
+          "#E7EFFD"
+        ],
+        "approximate": true
+      },
+      "tx-3": {
+        "role": "neutral",
+        "displayName": "Slate",
+        "canonical": "#97A0B2",
+        "oklch": "oklch(70.4% 0.028 264.4)",
+        "tonalRamp": [
+          "#060B17",
+          "#1E2533",
+          "#3A4251",
+          "#596172",
+          "#7A8394",
+          "#9CA5B7",
+          "#C0C9DC",
+          "#E5EFFF"
+        ],
+        "approximate": true
+      },
+      "live": {
+        "role": "state",
+        "displayName": "Live Red",
+        "canonical": "#F0484F",
+        "oklch": "oklch(64.4% 0.204 22.8)",
+        "tonalRamp": [
+          "#360000",
+          "#5C0000",
+          "#820013",
+          "#A92D33",
+          "#D15353",
+          "#F97775",
+          "#FF9C98",
+          "#FFC1BC"
+        ],
+        "approximate": true
+      },
+      "live-text": {
+        "role": "state",
+        "displayName": "Live Red Text",
+        "canonical": "#FF8A8F",
+        "oklch": "oklch(76.3% 0.142 18.3)",
+        "tonalRamp": [
+          "#320000",
+          "#570006",
+          "#7C0D23",
+          "#A23641",
+          "#C95A61",
+          "#F17D83",
+          "#FFA1A6",
+          "#FFC6CA"
+        ],
+        "approximate": true
+      },
+      "ok": {
+        "role": "state",
+        "displayName": "Paid Green",
+        "canonical": "#43C08F",
+        "oklch": "oklch(72.6% 0.132 163.4)",
+        "tonalRamp": [
+          "#001700",
+          "#003610",
+          "#00562D",
+          "#00774B",
+          "#009A6C",
+          "#41BF8E",
+          "#6BE4B1",
+          "#93FFD6"
+        ],
+        "approximate": true
+      },
+      "ok-text": {
+        "role": "state",
+        "displayName": "Paid Green Text",
+        "canonical": "#7BDDB5",
+        "oklch": "oklch(82.6% 0.110 165.4)",
+        "tonalRamp": [
+          "#001601",
+          "#003417",
+          "#005333",
+          "#007452",
+          "#2F9772",
+          "#58BB94",
+          "#7EE0B8",
+          "#A4FFDD"
+        ],
+        "approximate": true
+      },
+      "pending": {
+        "role": "state",
+        "displayName": "Pending Amber",
+        "canonical": "#F09A4A",
+        "oklch": "oklch(75.9% 0.140 60.9)",
+        "tonalRamp": [
+          "#2D0000",
+          "#500000",
+          "#732700",
+          "#974900",
+          "#BD6B06",
+          "#E38E3D",
+          "#FFB364",
+          "#FFD889"
+        ],
+        "approximate": true
+      },
+      "pending-text": {
+        "role": "state",
+        "displayName": "Pending Amber Text",
+        "canonical": "#FFB877",
+        "oklch": "oklch(83.5% 0.116 62.6)",
+        "tonalRamp": [
+          "#280000",
+          "#490D00",
+          "#6B2F00",
+          "#8E4F00",
+          "#B3712E",
+          "#D89453",
+          "#FFB877",
+          "#FFDD9C"
+        ],
+        "approximate": true
+      },
+      "danger": {
+        "role": "state",
+        "displayName": "Danger Red",
+        "canonical": "#F0484F",
+        "oklch": "oklch(64.4% 0.204 22.8)",
+        "tonalRamp": [
+          "#360000",
+          "#5C0000",
+          "#820013",
+          "#A92D33",
+          "#D15353",
+          "#F97775",
+          "#FF9C98",
+          "#FFC1BC"
+        ],
+        "approximate": true
+      },
+      "gold-line": {
+        "role": "neutral",
+        "displayName": "Gold Hairline",
+        "canonical": "rgba(212,175,90,.28)",
+        "tonalRamp": []
+      },
+      "gold-wash": {
+        "role": "neutral",
+        "displayName": "Gold Wash",
+        "canonical": "rgba(212,175,90,.08)",
+        "tonalRamp": []
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Line",
+        "canonical": "rgba(255,255,255,.08)",
+        "tonalRamp": []
+      },
+      "line-2": {
+        "role": "neutral",
+        "displayName": "Line Strong",
+        "canonical": "rgba(255,255,255,.14)",
+        "tonalRamp": []
+      }
+    },
+    "typographyMeta": {
+      "display-mega": {
+        "displayName": "Display Mega",
+        "purpose": "Greeting name, login hero."
+      },
+      "display-xl": {
+        "displayName": "Display Xl",
+        "purpose": "Screen titles."
+      },
+      "display-l": {
+        "displayName": "Display L",
+        "purpose": "Prices and totals."
+      },
+      "display-m": {
+        "displayName": "Display M",
+        "purpose": "Section heads."
+      },
+      "duel-name": {
+        "displayName": "Duel Name",
+        "purpose": "Pair names in the gold slash duel."
+      },
+      "button": {
+        "displayName": "Button",
+        "purpose": "Text buttons (56px)."
+      },
+      "button-small": {
+        "displayName": "Button Small",
+        "purpose": "Small buttons (40px)."
+      },
+      "support": {
+        "displayName": "Support",
+        "purpose": "Wide-tracked caps: data labels, group heads, greeting line."
+      },
+      "support-light": {
+        "displayName": "Support Light",
+        "purpose": "Brand taglines (Gente · Pádel · Experiencias)."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Default reading text."
+      },
+      "body-small": {
+        "displayName": "Body Small",
+        "purpose": "List meta, secondary lines, bracket rows."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Form labels, chips, links, segmented options."
+      },
+      "tag": {
+        "displayName": "Tag",
+        "purpose": "Status tags."
+      },
+      "tab": {
+        "displayName": "Tab",
+        "purpose": "Tab bar labels."
+      },
+      "score": {
+        "displayName": "Score",
+        "purpose": "Point-box numerals (52px on TV)."
+      }
+    },
+    "fontSource": {
+      "family": "Archivo",
+      "axes": {
+        "wdth": "62..125",
+        "wght": "100..900",
+        "ital": "0..1"
+      },
+      "url": "https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&display=swap",
+      "widths": {
+        "display": 62,
+        "body": 100,
+        "support": 125
+      }
+    },
+    "typeScale": {
+      "fs-mega": "76px",
+      "fs-xl": "52px",
+      "fs-l": "34px",
+      "fs-m": "24px",
+      "fs-body": "15px",
+      "fs-s": "13px",
+      "fs-xs": "11px",
+      "posterOverrides": {
+        "profile-name": "80px",
+        "event-hero": "84px",
+        "event-poster": "64px",
+        "splash-word": "92px",
+        "success": "58px"
+      },
+      "tv": {
+        "call-names": "220px",
+        "call-names-opponent": "120px",
+        "call-court": "200px",
+        "win-names": "230px",
+        "win-score": "88px",
+        "court-name": "40px",
+        "point": "52px",
+        "upnext-time": "56px",
+        "top-event": "52px",
+        "clock": "64px",
+        "sponsor-head": "96px"
+      }
+    },
+    "gradients": [
+      {
+        "name": "gold-grad",
+        "value": "linear-gradient(100deg,#8C6A2E 0%,#B88F42 22%,#D4AF5A 40%,#F3DC9A 52%,#D4AF5A 64%,#A07B36 84%,#8C6A2E 100%)",
+        "purpose": "Horizontal metallic gold: primary buttons (220% size, pos 30%, hover 70%), gold text (200% size, pos 50%), seg indicator, meters, tab indicator, step bars, golden-point badge."
+      },
+      {
+        "name": "gold-grad-v",
+        "value": "linear-gradient(180deg,#F3DC9A 0%,#D4AF5A 45%,#8C6A2E 100%)",
+        "purpose": "Vertical gold: duel slash, ticker separators, active side-link bar."
+      },
+      {
+        "name": "panel",
+        "value": "linear-gradient(180deg,#132037,#0E1626)",
+        "purpose": "Panel surface (ink-3 to ink-2)."
+      },
+      {
+        "name": "hero-navy",
+        "value": "linear-gradient(160deg,#1B2A4A 0%,#0E1626 70%)",
+        "purpose": "Next-match card."
+      },
+      {
+        "name": "selected-row",
+        "value": "linear-gradient(90deg,rgba(212,175,90,.12),rgba(212,175,90,.02))",
+        "purpose": "Selected category / my timeline match."
+      },
+      {
+        "name": "sweep",
+        "value": "linear-gradient(100deg,transparent 30%,rgba(243,220,154,.45) 50%,transparent 70%)",
+        "purpose": "Bracket box sweep on result."
+      }
+    ],
+    "shapes": {
+      "chamfer": {
+        "value": "12px",
+        "clipPath": "polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px))",
+        "corners": "top-right and bottom-left cut 45deg",
+        "flutter": "BeveledRectangleBorder with BorderRadius.only(topRight: 12, bottomLeft: 12)"
+      },
+      "chamfer-sm": {
+        "value": "10px",
+        "use": "paired small line/dark buttons"
+      },
+      "skews": {
+        "slash": "-18deg",
+        "tab-indicator": "-30deg",
+        "ticker-separator": "-18deg",
+        "call-band": "-6deg (skewY)",
+        "slam-in": "-8deg"
+      },
+      "icons": "20px stroked line icons, stroke 1.75, round caps/joins, currentColor"
+    },
+    "shadows": [
+      {
+        "name": "sh-1",
+        "value": "0 1px 0 rgba(255,255,255,.04) inset,0 10px 28px -14px rgba(0,0,0,.7)",
+        "purpose": "Resting panels."
+      },
+      {
+        "name": "sh-2",
+        "value": "0 1px 0 rgba(255,255,255,.06) inset,0 22px 48px -20px rgba(0,0,0,.85)",
+        "purpose": "Next-match card, toast."
+      },
+      {
+        "name": "slash",
+        "value": "6px 10px 18px -8px rgba(0,0,0,.7)",
+        "purpose": "Under the gold slash."
+      },
+      {
+        "name": "dragging",
+        "value": "0 18px 40px -10px rgba(0,0,0,.9),0 0 0 1px #D4AF5A",
+        "purpose": "Schedule block being dragged."
+      },
+      {
+        "name": "push",
+        "value": "0 18px 40px -16px rgba(0,0,0,.8)",
+        "purpose": "Push-notification banner (with 20px blur, saturate 140%)."
+      },
+      {
+        "name": "sh-gold",
+        "value": "0 12px 30px -12px rgba(212,175,90,.55)",
+        "purpose": "Defined token, unused in the build; not a default."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(.23,1,.32,1)",
+        "purpose": "Entrances, presses, reveals."
+      },
+      {
+        "name": "ease-in-out",
+        "value": "cubic-bezier(.77,0,.175,1)",
+        "purpose": "Indicators, gold sweeps, swaps, scanline."
+      },
+      {
+        "name": "ease-drawer",
+        "value": "cubic-bezier(.32,.72,0,1)",
+        "purpose": "Screen push/pop, push notification."
+      },
+      {
+        "name": "d-press",
+        "value": "140ms",
+        "purpose": "Press scale (buttons .97, icon .92, cards .985, chips .96); tab cross-fade."
+      },
+      {
+        "name": "d-fast",
+        "value": "180ms",
+        "purpose": "Colour/border state changes."
+      },
+      {
+        "name": "d-base",
+        "value": "240ms",
+        "purpose": "Fades, switch, serve dot."
+      },
+      {
+        "name": "d-indicator",
+        "value": "220ms",
+        "purpose": "Tab and seg indicator slide; point-box value slide."
+      },
+      {
+        "name": "d-screen",
+        "value": "400ms",
+        "purpose": "Screen push (incoming from 100%, outgoing to -28% at brightness .55)."
+      },
+      {
+        "name": "d-hero",
+        "value": "700ms",
+        "purpose": "Splash shield, TV label tighten, winner names."
+      },
+      {
+        "name": "gold-sweep",
+        "value": "1400-2400ms ease-in-out",
+        "purpose": "Gold background-position sweep across display text (130% to -30%, 120% to -20%)."
+      },
+      {
+        "name": "court-call",
+        "value": "overlay fade 250ms; label 700ms; pair A slam 650ms @200ms; VS 300ms @650ms; pair B slam 650ms @750ms; arrow draw 600ms @1300ms; court scale 500ms @1700ms; sweeps @700ms/@2000ms; hold 7000ms; out 260ms",
+        "purpose": "TV llamado a cancha."
+      },
+      {
+        "name": "match-end",
+        "value": "overlay 300ms; names 700ms @150ms + sheen 2400ms @400ms; scores 420ms @700ms +80ms stagger; next 400ms @1200ms; confetti; hold 6500ms; out 280ms; then bracket name reveal 900ms + box sweep 1100ms @200ms",
+        "purpose": "TV fin de partido."
+      },
+      {
+        "name": "live-pulse",
+        "value": "1.6s ease-in-out infinite, opacity to .25",
+        "purpose": "Live dot."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "CSS: animation/transition durations 1ms, 1 iteration; ticker and live pulses off. Script: skip entrances, slam-ins, sweeps, confetti, value slides; screen changes become 200ms fades; overlay exits 1ms.",
+        "purpose": "prefers-reduced-motion: reduce."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "canvas-collapse",
+        "value": "900px",
+        "note": "Prototype canvas only"
+      },
+      {
+        "name": "phone",
+        "value": "390x844"
+      },
+      {
+        "name": "tv",
+        "value": "1920x1080"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Gold Button (chamfered)",
+      "kind": "button",
+      "refersTo": "button-gold",
+      "description": "Primary action. Gold gradient, 12px chamfer on top-right and bottom-left, ink text; one per screen.",
+      "html": "<button class=\"ds-btn-gold\">Inscribirme</button>",
+      "css": ".ds-btn-gold{font-family:'Archivo','Arial Narrow',system-ui,sans-serif;font-stretch:62%;font-weight:900;font-style:italic;text-transform:uppercase;height:56px;padding:0 24px;min-width:240px;border:0;cursor:pointer;font-size:21px;letter-spacing:.01em;color:#0A0D14;background:linear-gradient(100deg,#8C6A2E 0%,#B88F42 22%,#D4AF5A 40%,#F3DC9A 52%,#D4AF5A 64%,#A07B36 84%,#8C6A2E 100%);background-size:220% 100%;background-position:30% 0;clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px));transition:transform 140ms cubic-bezier(.23,1,.32,1),background-position 600ms cubic-bezier(.23,1,.32,1)}.ds-btn-gold:hover{background-position:70% 0}.ds-btn-gold:active{transform:scale(.97)}.ds-btn-gold:focus-visible{outline:2px solid #F6F4EF;outline-offset:-5px}"
+    },
+    {
+      "name": "Line Button",
+      "kind": "button",
+      "refersTo": "button-line",
+      "description": "Secondary action: champagne text on a gold hairline.",
+      "html": "<button class=\"ds-btn-line\">Invitar pareja</button>",
+      "css": ".ds-btn-line{font-family:'Archivo','Arial Narrow',system-ui,sans-serif;font-stretch:62%;font-weight:900;font-style:italic;text-transform:uppercase;height:56px;padding:0 24px;min-width:240px;font-size:21px;letter-spacing:.01em;color:#F3DC9A;background:rgba(212,175,90,.04);border:1px solid rgba(212,175,90,.28);border-radius:6px;cursor:pointer;transition:transform 140ms cubic-bezier(.23,1,.32,1)}.ds-btn-line:active{transform:scale(.97)}.ds-btn-line:focus-visible{outline:2px solid #F3DC9A;outline-offset:2px}"
+    },
+    {
+      "name": "Dark Button",
+      "kind": "button",
+      "refersTo": "button-dark",
+      "description": "Tertiary action on ink-3.",
+      "html": "<button class=\"ds-btn-dark\">Mis horarios</button>",
+      "css": ".ds-btn-dark{font-family:'Archivo','Arial Narrow',system-ui,sans-serif;font-stretch:62%;font-weight:900;font-style:italic;text-transform:uppercase;height:56px;padding:0 24px;min-width:240px;font-size:21px;letter-spacing:.01em;color:#F6F4EF;background:#132037;border:1px solid rgba(255,255,255,.08);border-radius:6px;cursor:pointer;transition:transform 140ms cubic-bezier(.23,1,.32,1)}.ds-btn-dark:active{transform:scale(.97)}.ds-btn-dark:focus-visible{outline:2px solid #F3DC9A;outline-offset:2px}"
+    },
+    {
+      "name": "Category Chips",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Filter chips; selected state shown.",
+      "html": "<div class=\"ds-chips\"><button class=\"ds-chip\" aria-pressed=\"true\">Todas</button><button class=\"ds-chip\" aria-pressed=\"false\">3ra</button><button class=\"ds-chip\" aria-pressed=\"false\">4ta</button></div>",
+      "css": ".ds-chips{display:flex;gap:8px}.ds-chip{font-family:'Archivo','Arial Narrow',system-ui,sans-serif;height:36px;padding:0 14px;border-radius:6px;border:1px solid rgba(255,255,255,.14);background:transparent;color:#BAC1CF;font-size:13px;font-weight:500;cursor:pointer;transition:color 180ms ease,border-color 180ms ease,background-color 180ms ease,transform 140ms cubic-bezier(.23,1,.32,1)}.ds-chip:hover{color:#F6F4EF}.ds-chip:active{transform:scale(.96)}.ds-chip:focus-visible{outline:2px solid #F3DC9A;outline-offset:2px}.ds-chip[aria-pressed=true]{color:#0A0D14;background:#D4AF5A;border-color:#D4AF5A;font-weight:700}"
+    },
+    {
+      "name": "State Tags",
+      "kind": "chip",
+      "refersTo": "tag-live",
+      "description": "Live, paid, pending, gold and mute status tags.",
+      "html": "<div class=\"ds-tags\"><span class=\"ds-tag ds-live\">En vivo</span><span class=\"ds-tag ds-ok\">Pagado</span><span class=\"ds-tag ds-pend\">Pendiente</span><span class=\"ds-tag ds-gold\">4ta · Cuartos</span><span class=\"ds-tag ds-mute\">Finalizado</span></div>",
+      "css": ".ds-tags{display:flex;gap:8px;flex-wrap:wrap}.ds-tag{font-family:'Archivo','Arial Narrow',system-ui,sans-serif;display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 8px;border-radius:4px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}.ds-live{background:rgba(240,72,79,.14);color:#FF8A8F}.ds-live::before{content:'';width:6px;height:6px;border-radius:50%;background:#F0484F;animation:ds-pulse 1.6s ease-in-out infinite}@keyframes ds-pulse{50%{opacity:.25}}.ds-ok{background:rgba(67,192,143,.13);color:#7BDDB5}.ds-pend{background:rgba(240,154,74,.13);color:#FFB877}.ds-gold{background:rgba(212,175,90,.08);color:#F3DC9A;border:1px solid rgba(212,175,90,.28)}.ds-mute{background:rgba(255,255,255,.06);color:#BAC1CF}@media (prefers-reduced-motion:reduce){.ds-live::before{animation:none}}"
+    },
+    {
+      "name": "Segmented Control",
+      "kind": "custom",
+      "refersTo": "seg-control",
+      "description": "Two-option switch with a sliding gold indicator.",
+      "html": "<div class=\"ds-seg\"><span class=\"ds-seg-ind\"></span><button aria-pressed=\"true\">Puntos</button><button aria-pressed=\"false\">Final</button></div>",
+      "css": ".ds-seg{font-family:'Archivo','Arial Narrow',system-ui,sans-serif;position:relative;display:grid;grid-template-columns:1fr 1fr;width:300px;padding:4px;border-radius:6px;background:#0E1626;border:1px solid rgba(255,255,255,.08)}.ds-seg button{position:relative;z-index:1;height:40px;border:0;background:none;font:inherit;font-size:13px;font-weight:600;color:#97A0B2;cursor:pointer;transition:color 180ms ease}.ds-seg button[aria-pressed=true]{color:#0A0D14}.ds-seg button:focus-visible{outline:2px solid #F3DC9A;outline-offset:2px}.ds-seg-ind{position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);border-radius:4px;background:linear-gradient(100deg,#8C6A2E 0%,#B88F42 22%,#D4AF5A 40%,#F3DC9A 52%,#D4AF5A 64%,#A07B36 84%,#8C6A2E 100%);transition:transform 220ms cubic-bezier(.77,0,.175,1)}"
+    },
+    {
+      "name": "Field",
+      "kind": "input",
+      "refersTo": "field",
+      "description": "Text field; border turns gold on focus.",
+      "html": "<label class=\"ds-field\"><input placeholder=\"Busca por nombre o @usuario\"></label>",
+      "css": ".ds-field{font-family:'Archivo','Arial Narrow',system-ui,sans-serif;display:flex;align-items:center;width:320px;height:52px;padding:0 14px;border-radius:6px;background:#0E1626;border:1px solid rgba(255,255,255,.14);transition:border-color 180ms ease}.ds-field:focus-within{border-color:#D4AF5A}.ds-field input{flex:1;background:none;border:0;outline:0;font:inherit;font-size:16px;color:#F6F4EF;caret-color:#D4AF5A}.ds-field input::placeholder{color:#97A0B2}"
+    },
+    {
+      "name": "Tab Bar",
+      "kind": "nav",
+      "refersTo": "tab-bar",
+      "description": "Floating four-tab bar with skewed gold indicator.",
+      "html": "<nav class=\"ds-tabbar\"><a class=\"ds-tab\" aria-selected=\"true\"><svg viewBox=\"0 0 24 24\"><path d=\"M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3z\"/></svg>Inicio</a><a class=\"ds-tab\"><svg viewBox=\"0 0 24 24\"><path d=\"M4 5h5v4H4zM4 15h5v4H4zM15 10h5v4h-5zM9 7h3v10H9M12 12h3\"/></svg>Cuadro</a><a class=\"ds-tab\"><svg viewBox=\"0 0 24 24\"><rect x=\"4\" y=\"5\" width=\"16\" height=\"15\" rx=\"2\"/><path d=\"M4 10h16M9 3v4M15 3v4\"/></svg>Horarios</a><a class=\"ds-tab\"><svg viewBox=\"0 0 24 24\"><circle cx=\"12\" cy=\"8\" r=\"4\"/><path d=\"M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6\"/></svg>Perfil</a><span class=\"ds-tab-ind\"><i></i></span></nav>",
+      "css": ".ds-tabbar{font-family:'Archivo','Arial Narrow',system-ui,sans-serif;position:relative;display:grid;grid-template-columns:repeat(4,1fr);width:366px;height:56px;border-radius:16px;background:rgba(19,32,55,.92);border:1px solid rgba(255,255,255,.08);backdrop-filter:blur(12px)}.ds-tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#97A0B2;cursor:pointer;transition:color 180ms ease}.ds-tab:hover{color:#BAC1CF}.ds-tab[aria-selected=true]{color:#F3DC9A}.ds-tab svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}.ds-tab-ind{position:absolute;bottom:6px;left:0;width:25%;display:flex;justify-content:center;pointer-events:none}.ds-tab-ind i{display:block;width:22px;height:3px;background:linear-gradient(100deg,#8C6A2E 0%,#B88F42 22%,#D4AF5A 40%,#F3DC9A 52%,#D4AF5A 64%,#A07B36 84%,#8C6A2E 100%);transform:skewX(-30deg)}"
+    },
+    {
+      "name": "Gold Slash Duel",
+      "kind": "custom",
+      "refersTo": "gold-slash",
+      "description": "Signature: next-match poster duel with meta row.",
+      "html": "<div class=\"ds-next\"><div class=\"ds-duel\"><div class=\"ds-pair\">Gasparini<br>De Anda<small>Tú y Chispita</small></div><div class=\"ds-slash\"></div><div class=\"ds-pair ds-r\">Lozano<br>Treviño<small>Sembrados #5</small></div></div><div class=\"ds-meta\"><div><span class=\"ds-s\">Cancha</span><span class=\"ds-d ds-gold\">3</span></div><div><span class=\"ds-s\">Hora</span><span class=\"ds-d\">17:30</span></div><div><span class=\"ds-s\">Faltan</span><span class=\"ds-d\">42 min</span></div></div></div>",
+      "css": ".ds-next{font-family:'Archivo','Arial Narrow',system-ui,sans-serif;width:350px;padding:20px 20px 16px;border-radius:10px;background:linear-gradient(160deg,#1B2A4A 0%,#0E1626 70%);border:1px solid rgba(212,175,90,.28);box-shadow:0 1px 0 rgba(255,255,255,.06) inset,0 22px 48px -20px rgba(0,0,0,.85);color:#F6F4EF}.ds-duel{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px}.ds-pair{font-stretch:62%;font-weight:900;font-style:italic;text-transform:uppercase;line-height:.9;font-size:30px}.ds-pair small{display:block;font-size:12px;font-stretch:100%;font-weight:500;font-style:normal;text-transform:none;color:#97A0B2;margin-top:6px}.ds-r{text-align:right}.ds-slash{width:22px;height:64px;background:linear-gradient(180deg,#F3DC9A 0%,#D4AF5A 45%,#8C6A2E 100%);transform:skewX(-18deg);border-radius:1px;box-shadow:6px 10px 18px -8px rgba(0,0,0,.7)}.ds-meta{display:grid;grid-template-columns:1fr 1fr 1fr;margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,.08)}.ds-meta div{display:grid;gap:4px}.ds-s{font-stretch:125%;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:#BAC1CF}.ds-d{font-stretch:62%;font-weight:900;font-style:italic;text-transform:uppercase;font-size:30px;line-height:.88;font-variant-numeric:tabular-nums}.ds-gold{background:linear-gradient(100deg,#8C6A2E 0%,#B88F42 22%,#D4AF5A 40%,#F3DC9A 52%,#D4AF5A 64%,#A07B36 84%,#8C6A2E 100%);background-size:200% 100%;background-position:50% 0;-webkit-background-clip:text;background-clip:text;color:transparent;padding-right:.12em}"
+    },
+    {
+      "name": "Scoreboard Row + Point Box",
+      "kind": "custom",
+      "refersTo": "point-box",
+      "description": "Live score rows: serve dot, set scores, point well.",
+      "html": "<div class=\"ds-board\"><div class=\"ds-row ds-serving\"><div class=\"ds-nm\"><i></i>Romo / Alcalá</div><div class=\"ds-st ds-won\">6</div><div class=\"ds-st ds-cur\">3</div><div class=\"ds-st\">-</div><div class=\"ds-pt\"><span>40</span></div></div><div class=\"ds-row\"><div class=\"ds-nm\"><i></i>Ibarra / Villaseñor</div><div class=\"ds-st\">4</div><div class=\"ds-st ds-cur\">2</div><div class=\"ds-st\">-</div><div class=\"ds-pt\"><span>15</span></div></div></div>",
+      "css": ".ds-board{font-family:'Archivo','Arial Narrow',system-ui,sans-serif;width:350px;padding:8px 16px;border-radius:10px;background:linear-gradient(180deg,#132037,#0E1626);border:1px solid rgba(255,255,255,.08);color:#F6F4EF}.ds-row{display:grid;grid-template-columns:1fr repeat(3,34px) 64px;align-items:center;gap:6px;padding:12px 0}.ds-row+.ds-row{border-top:1px solid rgba(255,255,255,.08)}.ds-nm{font-stretch:62%;font-weight:900;font-style:italic;text-transform:uppercase;font-size:21px;line-height:.95;display:flex;align-items:center;gap:8px}.ds-nm i{width:8px;height:8px;border-radius:50%;background:#D4AF5A;opacity:0;flex:none}.ds-serving .ds-nm i{opacity:1}.ds-st{text-align:center;font-size:20px;font-weight:700;color:#97A0B2;font-variant-numeric:tabular-nums}.ds-cur{color:#F6F4EF}.ds-won{color:#F3DC9A}.ds-pt{height:56px;border-radius:6px;background:#0A0D14;border:1px solid rgba(255,255,255,.08);display:grid;place-items:center}.ds-pt span{font-stretch:62%;font-weight:900;font-style:italic;font-size:36px;font-variant-numeric:tabular-nums}"
+    },
+    {
+      "name": "Bracket Match",
+      "kind": "card",
+      "refersTo": "bracket-match",
+      "description": "Draw box: caption strip, winner in champagne, loser slate; live border.",
+      "html": "<div class=\"ds-bm\"><div class=\"ds-cap\"><span>Cancha 2</span><span class=\"ds-lv\">En vivo</span></div><div class=\"ds-bmr ds-w\"><span class=\"ds-n\">Marvin / Becker</span><span class=\"ds-sc\">6 4</span></div><div class=\"ds-bmr ds-l\"><span class=\"ds-n\">Navarro / Quiñones</span><span class=\"ds-sc\">3 2</span></div></div>",
+      "css": ".ds-bm{font-family:'Archivo','Arial Narrow',system-ui,sans-serif;width:200px;background:#0E1626;border:1px solid rgba(240,72,79,.5);border-radius:6px;overflow:hidden;color:#F6F4EF}.ds-cap{display:flex;justify-content:space-between;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#97A0B2;padding:5px 10px;background:rgba(0,0,0,.18)}.ds-lv{color:#FF8A8F}.ds-bmr{display:flex;align-items:center;height:36px;padding:0 10px;gap:8px;font-size:13px}.ds-bmr+.ds-bmr{border-top:1px solid rgba(255,255,255,.08)}.ds-n{flex:1;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ds-sc{font-weight:700;font-variant-numeric:tabular-nums;color:#BAC1CF}.ds-w .ds-n{color:#F3DC9A;font-weight:700}.ds-w .ds-sc{color:#F6F4EF}.ds-l .ds-n{color:#97A0B2}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Fight Poster",
+    "overview": "Every match is a LEVA fight poster. Pairings are set as poster duels: two condensed black-italic names split by a skewed gold slash, on deep navy-black. The world borrows from LEVA's Instagram flyers (high contrast, gold as protagonist, epic sports tone) and refuses the sports-SaaS default of white cards, green court accents and flat fixture lists.\n\nThe same world runs at two densities. Player screens are poster-scaled: huge italic names, generous dark ground, one gold primary action. Admin and judge screens keep the type, palette and gold vocabulary but tighten to working density (36px bracket rows, 13px body, 6px-radius list surfaces). The club TV (1920x1080 stage) is the poster at full scale, with the two signature motions: the \"llamado a cancha\" slam-in and the gold sweep on match end.\n\nLegibility outranks drama: a court number, a time or a score is never sacrificed to the poster. Numerals are tabular wherever they change; the gold gradient is reserved so that when it appears it means \"this is yours, this wins, or press this\".",
+    "keyCharacteristics": [
+      "Deep navy-black ground in four ink steps; shield navy for raised surfaces.",
+      "Metallic gold always as a gradient, reserved for names, primary actions, winners and the slash.",
+      "One family (Archivo variable) in three widths: 62% black italic display, 100% body, 125% wide-tracked support caps.",
+      "Chamfered (cut) corners on primary controls; small radii (4-16px) everywhere else.",
+      "Gold hairlines and faint court-line drawings instead of heavy shadow.",
+      "Fast, decisive motion on strong ease-out curves; everything reduces to fades or nothing under reduced motion."
+    ],
+    "rules": [
+      {
+        "name": "The Gold Is Earned Rule",
+        "body": "Gold gradient marks only four things: player/pair names given the spotlight, the primary action, winners, and the slash. Everything else is white, steel or slate on ink.",
+        "section": "colors"
+      },
+      {
+        "name": "The Never Flat Yellow Rule",
+        "body": "Any gold area larger than a stroke, dot or text glyph is a gradient. Flat gold-500 is for lines and marks only.",
+        "section": "colors"
+      },
+      {
+        "name": "The Two Extremes Rule",
+        "body": "Display is always width 62 / 900 / italic / uppercase; support is always width 125 / light-regular / wide-tracked caps. Do not use mid widths or upright display.",
+        "section": "typography"
+      },
+      {
+        "name": "The Tabular Numbers Rule",
+        "body": "Every number that changes (scores, times, counts, money, seeds) uses tabular figures.",
+        "section": "typography"
+      },
+      {
+        "name": "The Support Line Labels Data Rule",
+        "body": "The tracked support line names a datum (CANCHA, HORA), groups a list, or carries a brand phrase. It does not get stacked as a decorative eyebrow above section titles.",
+        "section": "typography"
+      },
+      {
+        "name": "The Hairline Over Shadow Rule",
+        "body": "Separate with a 1px line (8%/14% white, or gold-line for \"mine\") before adding shadow. Only panels and floating elements carry shadow.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Cut Corner Rule",
+        "body": "The chamfer belongs to the primary action (and its paired small buttons). Containers keep soft radii; do not chamfer panels or list items.",
+        "section": "shapes"
+      }
+    ],
+    "dos": [
+      "**Do** render every gold area as the gold gradient; keep flat gold-500 to strokes, dots and borders.",
+      "**Do** set pair names, titles and key numerals in Archivo width 62 / 900 / italic / uppercase, and support lines in width 125 wide-tracked caps.",
+      "**Do** separate pairs with the skewed gold slash wherever a match is presented as a pairing.",
+      "**Do** chamfer the primary gold action (12px cut) and keep containers at 4-10px radii.",
+      "**Do** use tabular figures for all scores, times, counts and money.",
+      "**Do** mark \"mine\" and selected with gold-500 or gold-line borders plus gold wash, and live with the red tag and pulsing dot.",
+      "**Do** keep every motion on the three named curves and provide the reduced-motion fallback.",
+      "**Do** change brand values only in the tokens; they are approximate until LEVA supplies official values."
+    ],
+    "donts": [
+      "**Don't** use flat yellow or a single flat gold fill for buttons, indicators or display text.",
+      "**Don't** use white cards, green \"court\" accents or flat fixture lists.",
+      "**Don't** spend the gold gradient on secondary actions, decoration or body text.",
+      "**Don't** use upright or mid-width display type.",
+      "**Don't** stack tracked support lines as eyebrows above section titles.",
+      "**Don't** set text below 11px.",
+      "**Don't** treat the placeholder shield, typographic portrait plates or \"Logo sponsor\" slots as brand art."
+    ]
+  }
+}

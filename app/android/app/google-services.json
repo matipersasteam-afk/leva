@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "453238712077",
+    "project_id": "leva-padel-app",
+    "storage_bucket": "leva-padel-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:453238712077:android:03709b648ab6f8b29c3244",
+        "android_client_info": {
+          "package_name": "mx.leva.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZBgZOfNTWGYYGqHhltK3e5Jxc3-xsDSU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
