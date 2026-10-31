@@ -32,11 +32,9 @@ class _AdminRegistrationsScreenState
     if (r.status == RegistrationStatus.cancelled) return _filter == _Filter.all;
     return switch (_filter) {
       _Filter.all => true,
-      _Filter.paid =>
-        r.payment.isPaid && r.status != RegistrationStatus.waitlist,
-      _Filter.pending =>
-        !r.payment.isPaid && r.status != RegistrationStatus.waitlist,
-      _Filter.waitlist => r.status == RegistrationStatus.waitlist,
+      _Filter.paid => r.payment.isPaid && !r.onWaitlist,
+      _Filter.pending => !r.payment.isPaid && !r.onWaitlist,
+      _Filter.waitlist => r.onWaitlist,
     };
   }
 
@@ -247,7 +245,7 @@ class _AdminRegistrationsScreenState
                               categoryName: catName(r.categoryId),
                               busy: _busyId == r.id,
                               canPromote:
-                                  r.status == RegistrationStatus.waitlist &&
+                                  r.onWaitlist &&
                                   !(cat(r.categoryId)?.isFull ?? true),
                               onPaid: () => _run(
                                 r,
@@ -329,8 +327,10 @@ class _RegRow extends StatelessWidget {
     final active = reg.status != RegistrationStatus.cancelled;
     final detail = switch (reg.status) {
       RegistrationStatus.cancelled => 'Cancelada',
-      RegistrationStatus.waitlist =>
+      _ when reg.onWaitlist => [
         'Lista de espera${reg.waitlistPosition == null ? '' : ' · lugar ${reg.waitlistPosition}'}',
+        if (!reg.hasPartner) 'falta que acepte la pareja',
+      ].join(' · '),
       _ when reg.payment.isPaid =>
         'Pagado ${formatMxn(reg.payment.paidCents)} · ${reg.payment.method?.label ?? ''}',
       _ => [
@@ -358,7 +358,7 @@ class _RegRow extends StatelessWidget {
           )
         : active &&
               !reg.payment.isPaid &&
-              reg.status != RegistrationStatus.waitlist
+              !reg.onWaitlist
         ? LevaButton(
             label: 'Marcar cobrado',
             small: true,

@@ -248,7 +248,7 @@ class RegistrationRepository {
   Future<void> cancel(Registration r) => _db.runTransaction((tx) async {
     final catRef = _cat(r.eventId, r.categoryId);
     final cat = categoryFromDocLite((await tx.get(catRef)).data() ?? const {});
-    final wasWaitlist = r.status == RegistrationStatus.waitlist;
+    final wasWaitlist = r.onWaitlist;
     tx.update(_regs(r.eventId).doc(r.id), {
       'status': RegistrationStatus.cancelled.id,
       'updatedAt': FieldValue.serverTimestamp(),

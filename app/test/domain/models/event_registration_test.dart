@@ -237,6 +237,31 @@ void main() {
       },
     );
 
+    test(
+      'quien entró en espera sin pareja cuenta como espera, no como pendiente',
+      () {
+        final solo = reg(
+          players: const [p1],
+          status: RegistrationStatus.pendingPartner,
+          slot: RegistrationSlot.waitlist,
+        );
+        expect(solo.onWaitlist, isTrue);
+        expect(
+          reg(status: RegistrationStatus.pendingPartner).onWaitlist,
+          isFalse,
+        );
+        expect(
+          reg(
+            status: RegistrationStatus.cancelled,
+            slot: RegistrationSlot.waitlist,
+          ).onWaitlist,
+          isFalse,
+        );
+        final s = RegistrationSummary.of([solo, reg()]);
+        expect([s.total, s.pending, s.waitlist], [1, 1, 1]);
+      },
+    );
+
     test('formato de dinero MXN', () {
       expect(formatMxn(140000), r'$1,400');
       expect(formatMxn(5320000), r'$53,200');

@@ -124,6 +124,12 @@ class Registration {
   RegistrationPlayer? get partner => players.length > 1 ? players[1] : null;
   bool get hasPartner => partner != null;
 
+  /// Ocupa un puesto de la lista de espera. Se mira `slot` y no `status`:
+  /// quien entró sin lugar sigue en `pending_partner` hasta que acepte la pareja.
+  bool get onWaitlist =>
+      slot == RegistrationSlot.waitlist &&
+      status != RegistrationStatus.cancelled;
+
   /// "Gasparini / De Anda" o "Gasparini / (pendiente)".
   String get label =>
       '${captain.lastName} / ${partner?.lastName ?? 'por confirmar'}';
@@ -202,7 +208,7 @@ class RegistrationSummary {
     var total = 0, paid = 0, pending = 0, waitlist = 0, collected = 0;
     for (final r in regs) {
       if (r.status == RegistrationStatus.cancelled) continue;
-      if (r.status == RegistrationStatus.waitlist) {
+      if (r.onWaitlist) {
         waitlist++;
         continue;
       }

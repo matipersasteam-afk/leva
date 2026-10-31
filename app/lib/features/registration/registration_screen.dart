@@ -131,7 +131,7 @@ class _Body extends ConsumerWidget {
         ),
         const SizedBox(height: LevaSpace.s3),
         _AvailabilityGrid(reg: reg, event: event, uid: me),
-        if (reg.status != RegistrationStatus.waitlist &&
+        if (!reg.onWaitlist &&
             reg.status != RegistrationStatus.cancelled) ...[
           const LevaSectionHeader('Pago'),
           _PaymentSection(reg: reg),
