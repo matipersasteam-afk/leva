@@ -591,3 +591,61 @@ events/{eventId}
 6. Placas para compartir y reporte de exposición.
 
 **Marcador de cancha y fotos:** pantalla 16:9 por cancha (`courts/{court}/display` lee `events/{eventId}/matches/{matchId}` con onSnapshot; sin sponsors ni otros partidos) y paso "Foto para el marcador" en el check-in del partido: recorte de fondo en el dispositivo (Vision en iOS, ML Kit Subject Segmentation en Android) o en una Cloud Function `cutoutPhoto`, guardado en `matches/{matchId}/photos/{uid}`.
+
+## 13. Transmisión en vivo · guía para el día del torneo (OBS + YouTube Live)
+
+> El prototipo ya trae las escenas (`leva-app.html#overlay=…`) y el panel **Control de transmisión** (menú 47). En producción, el panel y las escenas de OBS se sincronizan con Firestore (`events/{eventId}/broadcast/{courtId}` + el partido que carga el juez), así que funcionan en cualquier computadora. En el prototipo solo se sincronizan las pestañas del mismo navegador: dentro de OBS, una escena sola muestra el partido de ejemplo.
+
+### 13.1 Un día antes (24 h de anticipación)
+1. **Activar la transmisión en vivo del canal de LEVA.** YouTube Studio → Crear → *Emitir en vivo*. La primera vez YouTube tarda hasta 24 horas en habilitarla y pide verificar el canal con un teléfono. Por eso se hace un día antes, nunca el mismo día.
+2. **Programar la transmisión.** Título (“Circuito LEVA · Cuartos de final · Cancha NIKE”), miniatura y visibilidad *Pública*. Activar *Latencia baja*.
+3. **Pegar el link del video** (`youtube.com/live/…` o `youtu.be/…`) en *Admin · Marcador de cancha → Link de la transmisión en YouTube*. Con eso aparece la tarjeta **En vivo** en Inicio y en la ficha del partido.
+
+### 13.2 Clave de transmisión
+- La clave se copia de YouTube Studio **solo** a OBS (*Configuración → Emisión → Servicio: YouTube*, o mejor *Conectar cuenta*, que no muestra la clave).
+- **Nunca** se comparte por WhatsApp o correo. Tampoco va en capturas, en el código, en el repositorio, en Firestore ni en la app.
+- Si alguien la vio: YouTube Studio → *Restablecer* clave y volver a pegarla en OBS.
+
+### 13.3 OBS para 1080p
+| Ajuste | Valor |
+|---|---|
+| Video | Resolución base y de salida 1920 × 1080 · 30 fps (60 solo si la PC y la subida lo aguantan) |
+| Salida (modo avanzado) | Codificador por hardware (NVENC, Quick Sync o AMF); si no hay, x264 *veryfast* |
+| Control de tasa | CBR · 6,000 kbps a 30 fps (9,000 a 60 fps) |
+| Fotogramas clave | Cada 2 s · perfil *high* |
+| Audio | AAC 160 kbps · 48 kHz |
+| Avanzado | *Reconexión automática* encendida: 10 s de espera, 20 reintentos |
+
+Subida mínima en la sede: **10 Mbps estables** para 6,000 kbps (1.5 veces el bitrate).
+
+### 13.4 Escenas como Fuente de navegador
+1. Abrir **Control de transmisión** en la laptop del operador y copiar la URL de cada escena con **Copiar**. Si el portapapeles falla, la URL queda seleccionada para copiarla con Ctrl+C.
+2. En OBS: *Fuentes → + → Navegador* → pegar la URL → **Ancho 1920, Alto 1080**. Se deja el CSS personalizado predeterminado (fondo transparente).
+3. **Recomendado:** una sola escena de OBS, *Partido*, con la cámara abajo y encima la fuente **Programa** (`#overlay=programa`). Esa fuente sigue al panel y, con **Automático** encendido, cambia sola:
+   - a *Momento clave* en game point, set point, match point y punto de oro;
+   - a *Entre sets* al cerrar un set;
+   - a *Final* al terminar el partido.
+4. **Alternativa manual:** una escena de OBS por URL (*Previa*, *En juego* con *Momento clave* encima, *Entre sets*, *Pausa*, *Final*), cambiándolas desde OBS.
+5. La barra **En juego** va arriba a la izquierda para no tapar la cancha. Si la cámara queda distinta, se mueve la fuente en OBS y no se edita la escena.
+
+### 13.5 Cámara con celular
+- Celular en **horizontal**, en trípode alto (3–4 m) detrás del cristal de fondo, con la cancha completa en cuadro.
+- Conectado a la laptop como cámara web por USB (más estable) o por la misma red Wi-Fi, a 1080p y 30 fps. En OBS entra como *Dispositivo de captura de video*.
+- **No molestar** activado, pantalla sin bloqueo automático, siempre conectado al cargador y sin otras apps abiertas.
+
+### 13.6 Internet de respaldo
+- La laptop de OBS va por **cable de red** al módem de la sede, nunca por Wi-Fi.
+- Respaldo listo y probado: celular con datos compartidos por USB o un módem 4G/5G. Si se cae la red principal, se cambia la conexión y OBS reconecta solo (13.3).
+- Si el corte dura más de unos segundos, el operador pone **Pausa** (“Volvemos en un momento”) hasta recuperar la imagen.
+
+### 13.7 Checklist antes de salir al aire (10 puntos)
+1. Transmisión creada en YouTube y link pegado en *Admin · Marcador de cancha*.
+2. La clave está solo en OBS y nadie más la tiene.
+3. Prueba de velocidad en la cancha: subida de 10 Mbps o más.
+4. Internet de respaldo probado: se cambia de red y OBS reconecta.
+5. Cámara fija y encuadrada, celular cargando y en *No molestar*.
+6. Audio de ambiente en verde (entre −20 y −10 dB) y sin eco del voceo.
+7. Fuentes de navegador a 1920 × 1080 con fondo transparente; *Programa* sigue al panel.
+8. Panel con el partido correcto, *Automático* encendido y “Marcador oficial presentado por EVIAN” visible.
+9. El juez tiene el marcador listo: un punto de prueba, *Deshacer* y la barra vuelve a 0–0.
+10. Prueba privada (*No listada*) de 5 minutos revisada desde otro celular; después se cambia a *Pública*.

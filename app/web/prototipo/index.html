@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>LEVA · Prototipo</title>
+<!-- Escenas para OBS (#overlay=juego…): se marca antes de pintar para que no se vea nada más que la escena -->
+<script>if (/^#overlay=/.test(location.hash)) document.documentElement.classList.add('ovl');</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&display=swap" rel="stylesheet">
@@ -1148,6 +1150,260 @@ body.cal-s #d-cal .tray .mb{min-height:76px}
 .tvc-leg span{display:flex;align-items:center;gap:10px}
 .tvc-leg .lg{width:28px;height:18px}
 
+/* ---------- Indicador de llegada (calendario, torre y tablero): relleno = presente, aro vacío = ausente ---------- */
+.pres{display:inline-block;position:relative;width:9px;height:9px;border-radius:50%;border:1.5px solid var(--tx-3);flex:none;margin-right:5px;vertical-align:.1em;
+  transition:background-color 240ms ease,border-color 240ms ease}
+.pres.on{background:var(--ok);border-color:var(--ok)}
+
+/* ---------- TV · Tablero de próximos partidos (split-flap, 1920×1080, legible a distancia) ---------- */
+.tvb{background:radial-gradient(120% 80% at 50% -10%,var(--ink-3) 0%,var(--ink-1) 55%,var(--ink-0) 100%)}
+.tvb-top{position:absolute;left:72px;right:72px;top:0;height:132px;display:flex;align-items:center;gap:28px;border-bottom:1px solid var(--gold-line)}
+.tvb-top svg.sh{width:70px;height:76px;flex:none}
+.tvb-top h2{font-size:88px}
+.tvb-top .ev .s{font-size:18px;margin-top:12px}
+.tvb-clock{margin-left:auto;text-align:right}
+.tvb-clock .s{font-size:14px}
+.tvb-clock .d{font-size:88px;color:var(--gold-200)}
+/* La cancha y el estado son lo que se busca de lejos: columnas anchas y letra grande */
+.tvb-head,.tvb-r{display:grid;grid-template-columns:170px 600px 300px 140px 1fr;column-gap:20px;align-items:center}
+.tvb-head{position:absolute;left:72px;right:72px;top:142px;height:52px;border-bottom:1px solid var(--line)}
+.tvb-head span{font-stretch:125%;font-size:18px;letter-spacing:.2em;white-space:nowrap;text-transform:uppercase;color:var(--tx-2)}
+.tvb-rows{position:absolute;left:72px;right:72px;top:202px;height:700px}
+.tvb-r{position:absolute;left:0;right:0;top:0;height:140px;border-bottom:1px solid var(--line);
+  transition:transform 600ms var(--ease-in-out),translate 520ms var(--ease-out),opacity 420ms ease,background-color 300ms ease}
+.tvb-r.enter{opacity:0;translate:0 20px}
+.tvb-r.out.page{opacity:0;transition-duration:600ms,520ms,280ms,300ms}
+.tvb-r.out.gone{opacity:0;translate:-90px 0}
+.tvb-r.st-call{background:linear-gradient(90deg,var(--gold-wash),transparent 70%)}
+.tvb-r.st-live{background:linear-gradient(90deg,rgba(240,72,79,.09),transparent 70%)}
+.tvb .flap{display:inline-flex;white-space:nowrap;perspective:600px}
+.tvb .flap b{display:inline-block;width:.6em;margin-right:2px;text-align:center;font-stretch:62%;font-weight:900;font-style:italic;text-transform:uppercase;line-height:1.14;color:var(--tx-1);
+  background:linear-gradient(180deg,var(--ink-3) 0 49.5%,var(--ink-0) 49.5% 50.5%,var(--ink-2) 50.5%);border-radius:.07em;box-shadow:0 1px 0 rgba(255,255,255,.05) inset;backface-visibility:hidden}
+.tvb .flap b.sp{width:.28em;background:none;box-shadow:none} /* el espacio no es una ficha: "A CANCHA" se lee de corrido */
+.tvb .c-t .flap{font-size:52px}
+.tvb .c-c .flap{font-size:84px}
+.tvb .c-c .flap b{color:var(--gold-200)} /* el oro se gana: solo la cancha, el dato que manda */
+.tvb .c-m{display:grid;grid-template-rows:auto 20px auto;align-content:center}
+.tvb .c-m .tvb-pr{display:flex;align-items:center;gap:14px}
+.tvb .c-m .flap{font-size:44px}
+.tvb .c-m .tvb-vs{font-stretch:125%;font-size:18px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold-500);padding-left:50px;line-height:20px}
+.tvb .c-k{display:grid;gap:10px;align-content:center}
+.tvb .c-k .flap{font-size:30px}
+.tvb .c-k .flap:first-of-type b{color:var(--cat)}
+.tvb .c-s{display:flex;align-items:center;gap:14px;height:100px;padding:0 16px;border-radius:var(--r-sm);background:rgba(255,255,255,.04);border:2px solid transparent;color:var(--tx-2);
+  transition:background-color 300ms ease,border-color 300ms ease,color 300ms ease}
+.tvb .c-s .flap{font-size:36px}
+.tvb .c-s .flap b{color:inherit;background:linear-gradient(180deg,rgba(0,0,0,.26) 0 49.5%,rgba(0,0,0,.55) 49.5% 50.5%,rgba(0,0,0,.16) 50.5%)}
+.tvb .c-s .sti{display:grid;place-items:center;width:44px;flex:none}
+.tvb .c-s .sti svg.i{width:44px;height:44px;stroke-width:2.2}
+.tvb .c-s .dot{width:22px;height:22px;border-radius:50%;background:var(--live);animation:tvbPulse 1.6s ease-in-out infinite}
+@keyframes tvbPulse{50%{opacity:.35}}
+.tvb .st-wait .c-s{border-color:var(--line-2);color:var(--tx-2)}
+.tvb .st-half .c-s{background:var(--navy);border-color:var(--navy-hi);color:var(--tx-1)}
+.tvb .st-ready .c-s{background:rgba(67,192,143,.16);border-color:var(--ok);color:var(--ok)}
+.tvb .st-call .c-s{background:var(--gold-grad);color:var(--ink-1)}
+.tvb .st-call .c-s .flap b{background:linear-gradient(180deg,rgba(255,255,255,.2) 0 49.5%,rgba(0,0,0,.35) 49.5% 50.5%,rgba(0,0,0,.06) 50.5%)}
+.tvb .st-live .c-s{background:rgba(240,72,79,.14);border-color:var(--live);color:#FF8A8F}
+.tvb .st-late .c-s{background:rgba(240,154,74,.12);border-color:var(--pending);color:var(--pending)}
+.tvb .st-fin .c-s{color:var(--tx-3)}
+.tvb .st-def .c-s{border:2px dashed var(--tx-3);color:var(--tx-3)}
+.tvb .st-fin .c-m,.tvb .st-def .c-m{opacity:.55}
+.tvb .pres{width:36px;height:36px;border-width:3px;margin:0}
+.tvb .pres.on::after{content:"";position:absolute;left:10px;top:4px;width:8px;height:16px;border:solid var(--ink-1);border-width:0 4px 4px 0;transform:rotate(45deg)}
+body:has(#tvboard.on) .dk-toast{display:none!important} /* los avisos del organizador no salen en la TV */
+.tvb-empty{position:absolute;left:72px;right:72px;top:440px;text-align:center;font-size:72px;color:var(--tx-2)}
+.tvb-foot{position:absolute;left:72px;right:72px;top:920px;height:60px;display:flex;align-items:center;gap:36px;font-size:22px;color:var(--tx-2)}
+.tvb-foot .lgd{display:flex;align-items:center;gap:12px}
+.tvb-foot .pres{width:26px;height:26px}
+.tvb-foot .pres.on::after{left:6px;top:2px;width:7px;height:13px;border-width:0 3px 3px 0}
+.tvb-foot .pg{margin-left:auto;display:flex;align-items:center;gap:16px;font-stretch:125%;font-size:16px;letter-spacing:.3em;text-transform:uppercase}
+.tvb-foot .bar{width:160px;height:4px;border-radius:2px;background:rgba(255,255,255,.1);overflow:hidden}
+.tvb-foot .bar i{display:block;height:100%;background:var(--gold-grad);transform-origin:left;transform:scaleX(0)}
+.tvb-sp{position:absolute;left:0;right:0;bottom:0;height:72px;display:flex;align-items:center;border-top:1px solid var(--gold-line);background:rgba(0,0,0,.35);overflow:hidden}
+.tvb-sp .tvb-lb{flex:none;align-self:stretch;display:flex;align-items:center;padding:0 36px 0 72px;font-size:15px;color:var(--gold-200);background:var(--ink-1);position:relative;z-index:1;box-shadow:24px 0 24px -8px var(--ink-1)}
+.tvb-sp-in{display:flex;white-space:nowrap;animation:marquee 36s linear infinite}
+.tvb-sp-in span{display:flex;align-items:center;gap:56px;padding-right:56px;font-stretch:62%;font-weight:900;font-style:italic;font-size:40px;text-transform:uppercase;color:var(--tx-1)}
+.tvb-sp-in span i{display:inline-block;width:10px;height:34px;background:var(--gold-grad-v);transform:skewX(-18deg)}
+@media (prefers-reduced-motion:reduce){
+  .tvb-r{transition:opacity 220ms ease}
+  .tvb-r.enter,.tvb-r.out.gone{translate:none}
+  .tvb-sp-in{animation:none}
+  .tvb .c-s .dot{animation:none}
+}
+
+/* ---------- Transmisión: escenas para OBS (1920×1080, fondo transparente) ---------- */
+#ovl{display:none}
+html.ovl,html.ovl body{background:transparent!important}
+html.ovl body>*:not(#ovl):not(svg){display:none!important} /* el svg de 0×0 guarda los degradados del escudo */
+html.ovl #ovl{display:block;position:fixed;inset:0;overflow:hidden}
+.ov-stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform-origin:center;overflow:hidden;color:var(--tx-1);font-family:var(--font)}
+.ov-scene{position:absolute;inset:0;transition:opacity 360ms var(--ease-out),translate 520ms var(--ease-out)}
+.ov-scrim{position:absolute;left:0;right:0;top:0;height:240px;background:linear-gradient(180deg,rgba(6,8,13,.72),transparent)}
+.ov-scene.enter{opacity:0;translate:0 18px}
+.ov-scene.out{opacity:0;transition-duration:260ms}
+.ov-panel{background:rgba(10,13,20,.92);border:1px solid var(--gold-line);box-shadow:0 18px 40px -18px rgba(0,0,0,.8)}
+.ov-chamf{clip-path:polygon(0 0,calc(100% - 18px) 0,100% 18px,100% 100%,18px 100%,0 calc(100% - 18px))}
+.ov-sup{font-stretch:125%;font-weight:400;letter-spacing:.3em;text-transform:uppercase}
+.ov-d{font-stretch:62%;font-weight:900;font-style:italic;text-transform:uppercase;line-height:.9}
+/* En juego: barra compacta arriba a la izquierda, fuera de la cancha */
+/* Medidas pensadas para leerse en un celular a 360p (1/3 de escala) y dentro del área segura del 5 % */
+.ov-bar{position:absolute;left:96px;top:54px;width:940px}
+.ov-bar-top{display:flex;align-items:center;gap:18px;height:50px;padding:0 18px;background:var(--ink-0);border:1px solid var(--line-2);border-bottom:0}
+.ov-live{display:inline-flex;align-items:center;gap:10px;height:32px;padding:0 12px;background:var(--live);color:var(--tx-1);font-weight:800;font-size:19px;letter-spacing:.14em}
+.ov-live i{width:11px;height:11px;border-radius:50%;background:var(--tx-1);animation:tvbPulse 1.6s ease-in-out infinite}
+.ov-clock{font-size:30px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--tx-1)}
+.ov-tb{font-size:19px;color:var(--gold-200)}
+.ov-view{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:24px;font-weight:600;color:var(--tx-2);font-variant-numeric:tabular-nums}
+.ov-view svg.i{width:24px;height:24px}
+.ov-sc{display:grid;background:rgba(10,13,20,.94);border:1px solid var(--line-2)}
+.ov-row{display:grid;grid-template-columns:36px minmax(0,1fr) repeat(var(--n),64px) 78px 116px;align-items:stretch;height:80px}
+.ov-row+.ov-row{border-top:1px solid var(--line)}
+.ov-srv{display:grid;place-items:center}
+.ov-nm{display:flex;align-items:center;min-width:0;padding:0 12px 0 0;font-stretch:62%;font-weight:900;font-style:italic;text-transform:uppercase;font-size:46px;white-space:nowrap}
+.ov-nm span{overflow:hidden;text-overflow:ellipsis;min-width:0}
+.ov-nm span.on{color:var(--gold-200)} /* el jugador que saca */
+.ov-nm .ov-sl{color:var(--tx-3);padding:0 6px;flex:none;overflow:visible}
+.ov-ball{width:20px;height:20px;border-radius:50%;background:radial-gradient(circle at 35% 35%,var(--gold-200),var(--gold-500) 60%,var(--gold-700))}
+.ov-set,.ov-gm,.ov-pt{display:grid;place-items:center;font-variant-numeric:tabular-nums;font-weight:700}
+.ov-set{font-size:38px;color:var(--tx-3)}
+.ov-set.w{color:var(--tx-1)}
+.ov-gm{font-size:46px;background:var(--navy);color:var(--tx-1)}
+.ov-pt{font-size:54px;font-weight:900;background:var(--gold-grad);color:var(--ink-1);perspective:400px}
+.ov-pt.done{background:var(--ink-2);color:var(--gold-200);font-size:24px;letter-spacing:.16em}
+.ov-off{display:flex;align-items:center;gap:12px;height:46px;padding:0 18px;background:var(--ink-0);border:1px solid var(--line-2);border-top:0;font-size:17px;letter-spacing:.18em;color:var(--tx-2)}
+.ov-off b{font-stretch:62%;font-weight:900;font-style:italic;font-size:32px;color:var(--gold-200);letter-spacing:0}
+.ov-tag{display:inline-flex;align-items:center;gap:12px;margin-top:10px;height:52px;padding:0 22px;background:var(--gold-grad);color:var(--ink-1);font-stretch:62%;font-weight:900;font-style:italic;font-size:34px;text-transform:uppercase;clip-path:polygon(0 0,100% 0,calc(100% - 14px) 100%,0 100%)}
+.ov-tag small{font-stretch:100%;font-style:normal;font-weight:700;font-size:18px;letter-spacing:.06em}
+/* Previa y final: parejas con fotos recortadas */
+.ov-floor{position:absolute;left:0;right:0;bottom:0;height:640px;background:linear-gradient(180deg,transparent 0,rgba(6,8,13,.86) 34%,var(--ink-0) 100%)}
+.ov-brand{position:absolute;left:72px;top:56px;display:flex;align-items:center;gap:16px}
+.ov-brand svg{width:54px;height:60px}
+.ov-brand .ov-d{font-size:40px}
+.ov-brand .ov-sup{font-size:14px;color:var(--gold-200);margin-top:6px}
+.ov-duel{position:absolute;left:72px;right:72px;bottom:150px;display:grid;grid-template-columns:1fr 200px 1fr;align-items:end}
+.ov-side{display:grid;gap:18px}
+.ov-side.ov-r{justify-items:end;text-align:right}
+.ov-figs{display:flex;align-items:flex-end;gap:0;height:400px}
+.ov-figs img{height:400px;width:auto;filter:drop-shadow(0 0 2px rgba(243,220,154,.7)) drop-shadow(0 20px 30px rgba(0,0,0,.6))}
+.ov-figs img+img{margin-left:-60px}
+.ov-pair{font-size:84px;max-width:760px}
+.ov-pair.long{font-size:64px}
+.ov-pair small{display:block;font-stretch:125%;font-style:normal;font-weight:400;font-size:16px;letter-spacing:.3em;color:var(--tx-2);margin-top:12px}
+.ov-vs{align-self:center;justify-self:center;display:grid;justify-items:center;gap:16px}
+.ov-vs i{width:30px;height:300px;background:var(--gold-grad-v);transform:skewX(-18deg)} /* la diagonal dorada separa a las parejas */
+.ov-vs .ov-sup{font-size:18px;color:var(--gold-200)}
+.ov-meta{position:absolute;left:72px;right:72px;bottom:56px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--gold-line);padding-top:22px}
+.ov-meta .ov-sup{font-size:18px;color:var(--tx-1)}
+.ov-meta .ov-sup b{color:var(--gold-200);font-weight:600}
+.ov-by{display:flex;align-items:baseline;gap:14px;font-size:15px;color:var(--tx-2)}
+.ov-by b{font-stretch:62%;font-weight:900;font-style:italic;font-size:34px;color:var(--tx-1);letter-spacing:0}
+/* Momento clave: barra dorada que entra de izquierda a derecha en el tercio inferior */
+.ov-key{position:absolute;left:0;bottom:96px;display:flex;align-items:center;gap:32px;height:132px;padding:0 80px 0 96px;background:var(--gold-grad);color:var(--ink-1);clip-path:polygon(0 0,100% 0,calc(100% - 56px) 100%,0 100%)}
+.ov-key .ov-d{font-size:104px}
+.ov-key .ov-who{display:grid;gap:8px;font-stretch:62%;font-weight:900;font-style:italic;text-transform:uppercase;font-size:38px;line-height:1}
+.ov-key .ov-who small{font-stretch:100%;font-style:normal;font-weight:700;font-size:17px;letter-spacing:.12em}
+.ov-key.ov-play{animation:ovKeyIn 560ms var(--ease-out) both}
+.ov-key.ov-play .ov-d{animation:ovKeyTx 620ms 120ms var(--ease-out) both}
+@keyframes ovKeyIn{from{clip-path:polygon(0 0,0 0,0 100%,0 100%)}}
+@keyframes ovKeyTx{from{opacity:0;transform:translateX(-40px)}}
+.ov-key.lv-match{height:150px}
+.ov-key.lv-match .ov-d{font-size:120px}
+.ov-key-empty{position:absolute;left:50%;top:50%;translate:-50% -50%;font-size:30px;color:var(--tx-2);text-align:center;line-height:1.4}
+/* Entre sets: resumen + spot */
+.ov-sets{position:absolute;left:72px;right:72px;bottom:72px;display:grid;grid-template-columns:1fr 560px;gap:24px;align-items:stretch}
+.ov-sets .ov-panel{padding:28px 36px}
+.ov-sets h3{font-size:64px;margin-bottom:22px}
+.ov-st{display:grid;grid-template-columns:1fr repeat(var(--n),84px);align-items:center;height:70px;border-top:1px solid var(--line)}
+.ov-st .ov-nm{padding:0;font-size:42px}
+.ov-st span{text-align:center;font-size:44px;font-weight:700;color:var(--tx-3);font-variant-numeric:tabular-nums}
+.ov-st span.w{color:var(--gold-200)}
+.ov-st span.last{background:var(--navy)}
+.ov-spot{position:relative;display:grid;align-content:center;gap:14px;background:rgba(10,13,20,.92);border:1px solid var(--gold-line);color:var(--tx-1);padding:28px 36px}
+.ov-spot::before{content:"";position:absolute;left:0;right:0;top:0;height:6px;background:var(--gold-grad)}
+.ov-spot .ov-sup{font-size:15px;color:var(--gold-200)}
+.ov-spot .ov-d{font-size:76px}
+.ov-spot p{font-size:24px;font-weight:500;line-height:1.35;color:var(--tx-2)}
+/* Pausa */
+.ov-pause{position:absolute;inset:0;background:radial-gradient(110% 90% at 50% 0%,var(--ink-3) 0,var(--ink-1) 55%,var(--ink-0) 100%);display:grid;place-items:center;text-align:center}
+.ov-pause-in{display:grid;justify-items:center;gap:26px;margin-top:-80px}
+.ov-pause svg.sh{width:120px;height:132px}
+.ov-pause .ov-d{font-size:170px}
+.ov-pause .ov-sup{font-size:22px;color:var(--tx-2)}
+.ov-rot{position:absolute;left:0;right:0;bottom:90px;display:grid;justify-items:center;gap:16px}
+.ov-rot .ov-sup{font-size:15px;color:var(--gold-200)}
+.ov-rot .ov-d{font-size:96px;transition:opacity 420ms ease}
+.ov-rot .ov-d.swap{opacity:0}
+/* Final */
+.ov-fin .ov-duel{grid-template-columns:1fr;justify-items:center;text-align:center;bottom:170px}
+.ov-fin .ov-figs img{height:470px}
+.ov-fin .ov-pair{font-size:136px;max-width:1700px}
+.ov-fin .ov-pair.long{font-size:104px}
+.ov-fin .ov-pair.both{font-size:76px}
+.ov-win{font-size:22px;color:var(--gold-200);margin-bottom:6px}
+.ov-res{display:flex;gap:28px;justify-content:center;font-size:64px;font-weight:800;font-variant-numeric:tabular-nums}
+.ov-res span{padding:0 6px}
+.ov-res span.ov-l{color:var(--tx-3)}
+@media (prefers-reduced-motion:reduce){
+  .ov-scene{transition:opacity 220ms ease}
+  .ov-scene.enter{translate:none}
+  .ov-key.ov-play,.ov-key.ov-play .ov-d{animation:ovFade 240ms ease both}
+  .ov-live i{animation:none}
+}
+@keyframes ovFade{from{opacity:0}}
+
+/* ---------- Panel "Control de transmisión" (operador, laptop) ---------- */
+.txp{position:fixed;inset:0;z-index:520;display:none;grid-template-rows:auto 1fr;background:var(--ink-0);color:var(--tx-1)}
+.txp.on{display:grid}
+.txp-top{display:flex;align-items:center;gap:18px;padding:16px 28px;border-bottom:1px solid var(--line)}
+.txp-top svg.sh{width:34px;height:38px}
+.txp-top .d{font-size:30px}
+.txp-top .txp-st{margin-left:auto;display:flex;align-items:center;gap:10px;font-size:14px;color:var(--tx-2)}
+.txp-main{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(360px,1fr);gap:24px;padding:24px 28px;overflow:auto;min-height:0}
+.txp-prev{position:relative;aspect-ratio:16/9;border-radius:var(--r-md);overflow:hidden;border:1px solid var(--line-2);
+  background:linear-gradient(180deg,rgba(6,8,13,.35),rgba(6,8,13,.15)),repeating-linear-gradient(90deg,transparent 0 9.6%,rgba(255,255,255,.05) 9.6% 9.7%),linear-gradient(180deg,var(--navy-hi) 0,var(--navy) 100%)}
+.txp-prev .ov-court{position:absolute;inset:0;width:100%;height:100%}
+.txp-prev .ov-stage{left:0;top:0;transform-origin:0 0}
+.txp-prev-cap{display:flex;justify-content:space-between;align-items:center;margin:10px 2px 0;font-size:13px;color:var(--tx-3)}
+.txp-sc{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}
+.txp-b{display:grid;gap:4px;text-align:left;min-height:88px;padding:14px 16px;border-radius:var(--r-md);background:var(--ink-2);border:1px solid var(--line-2);transition:background-color var(--d-fast) ease,border-color var(--d-fast) ease,transform var(--d-press) ease-out}
+.txp-b:active{transform:scale(.97)}
+.txp-b b{font-stretch:62%;font-weight:900;font-style:italic;text-transform:uppercase;font-size:26px;line-height:1}
+.txp-b small{font-size:13px;color:var(--tx-3)}
+.txp-b[aria-pressed="true"]{background:rgba(212,175,90,.12);border-color:var(--gold-500)}
+.txp-b[aria-pressed="true"] b{color:var(--gold-200)}
+.txp-b[aria-pressed="true"] small::before{content:"Al aire · ";color:var(--live);font-weight:700}
+@media (hover:hover) and (pointer:fine){.txp-b:hover{border-color:var(--gold-line)}}
+.txp-side{display:grid;gap:16px;align-content:start}
+.txp-card{padding:18px 20px;border-radius:var(--r-md);background:var(--ink-1);border:1px solid var(--line)}
+.txp-card h3{font-size:22px;margin-bottom:10px}
+.txp-card .opt{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:8px 0}
+.txp-card .opt b{font-weight:600;font-size:15px}
+.txp-card .opt small{display:block;font-size:12.5px;color:var(--tx-3);margin-top:2px}
+.txp-j{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;margin-top:6px}
+.txp-url{display:grid;grid-template-columns:96px 1fr auto;gap:8px;align-items:center;padding:6px 0;border-top:1px solid var(--line)}
+.txp-url:first-of-type{border-top:0}
+.txp-url span{font-size:13px;font-weight:600}
+.txp-url input{min-width:0;height:36px;padding:0 10px;border-radius:var(--r-sm);background:var(--ink-0);border:1px solid var(--line-2);color:var(--tx-2);font-size:12.5px;font-family:ui-monospace,Consolas,monospace}
+.txp-url input:focus{outline:2px solid var(--gold-200);outline-offset:1px;color:var(--tx-1)}
+.txp-msg{min-height:20px;font-size:13px;color:var(--tx-2);margin-top:8px}
+@media (max-width:900px){.txp-main{grid-template-columns:1fr}.txp-sc{grid-template-columns:repeat(2,1fr)}}
+
+/* ---------- Tarjeta EN VIVO con YouTube (Inicio y ficha del partido) ---------- */
+.yt{margin-top:18px;border-radius:var(--r-md);overflow:hidden;background:var(--ink-2);border:1px solid var(--line-2)}
+.yt-top{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;align-items:center;padding:12px 14px}
+.yt-top b{font-stretch:62%;font-weight:900;font-style:italic;text-transform:uppercase;font-size:20px;line-height:1.05;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.yt-top small{grid-column:1/-1;font-size:12px;color:var(--tx-3)}
+.yt-frame{position:relative;aspect-ratio:16/9;background:linear-gradient(180deg,var(--navy-hi),var(--navy))}
+.yt-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.yt-frame .ov-court{position:absolute;inset:0;width:100%;height:100%;opacity:.9}
+.yt-play{position:absolute;inset:0;display:grid;place-items:center;align-content:center;gap:10px;background:linear-gradient(180deg,rgba(6,8,13,.25),rgba(6,8,13,.7));color:var(--tx-1);font-size:13px;font-weight:600;text-align:center;padding:16px}
+.yt-play .yt-pl{width:62px;height:62px;border-radius:50%;display:grid;place-items:center;background:var(--gold-grad);color:var(--ink-1);box-shadow:var(--sh-gold);transition:transform var(--d-press) ease-out}
+.yt-play:active .yt-pl{transform:scale(.95)}
+.yt-play .yt-pl svg.i{width:26px;height:26px;fill:currentColor;stroke:none;margin-left:3px}
+.yt-play[disabled]{cursor:default}
+.yt-play[disabled] .yt-pl{background:rgba(255,255,255,.12);color:var(--tx-3);box-shadow:none}
+.yt-play a{color:var(--gold-200)}
+
 
 @media (max-width:1180px){
   .dk-brand .s,.dk-onair span{display:none}
@@ -2213,45 +2469,47 @@ body.cal-s #d-cal .tray .mb{min-height:76px}
       <li><button class="side-link" data-go="tower"><span class="n">18</span>Torre de control</button></li>
       <li><button class="side-link" data-go="voceo"><span class="n">19</span>Voceo con IA</button></li>
       <li><button class="side-link" id="open-tvcal"><span class="n">20</span>TV · calendario</button></li>
+      <li><button class="side-link" id="open-tvboard"><span class="n">21</span>TV · tablero de partidos</button></li>
     </ul></div>
     <div class="side-group"><h3 class="s">Jugador · temporada</h3><ul>
-      <li><button class="side-link" data-go="rank"><span class="n">21</span>Ranking LEVA</button></li>
-      <li><button class="side-link" id="go-stats"><span class="n">22</span>Mis estadísticas</button></li>
-      <li><button class="side-link" data-go="cred"><span class="n">23</span>Credencial LEVA</button></li>
+      <li><button class="side-link" data-go="rank"><span class="n">22</span>Ranking LEVA</button></li>
+      <li><button class="side-link" id="go-stats"><span class="n">23</span>Mis estadísticas</button></li>
+      <li><button class="side-link" data-go="cred"><span class="n">24</span>Credencial LEVA</button></li>
     </ul></div>
     <div class="side-group"><h3 class="s">Comunidad</h3><ul>
-      <li><button class="side-link" data-go="prode"><span class="n">24</span>Pronósticos</button></li>
-      <li><button class="side-link" data-go="jugada"><span class="n">25</span>Jugada del torneo</button></li>
-      <li><button class="side-link" data-go="adm-vend"><span class="n">26</span>Admin · Emprendedores</button></li>
+      <li><button class="side-link" data-go="prode"><span class="n">25</span>Pronósticos</button></li>
+      <li><button class="side-link" data-go="jugada"><span class="n">26</span>Jugada del torneo</button></li>
+      <li><button class="side-link" data-go="adm-vend"><span class="n">27</span>Admin · Emprendedores</button></li>
     </ul></div>
     <div class="side-group"><h3 class="s">Admin · operación</h3><ul>
-      <li><button class="side-link" data-go="adm-tour"><span class="n">27</span>Torneos · duplicar</button></li>
-      <li><button class="side-link" data-go="fin"><span class="n">28</span>Reporte financiero</button></li>
-      <li><button class="side-link" data-go="chk"><span class="n">29</span>Checklist del torneo</button></li>
-      <li><button class="side-link" data-go="adm-waiver"><span class="n">30</span>Cartas responsivas</button></li>
-      <li><button class="side-link" data-go="msg"><span class="n">31</span>Mensajes masivos</button></li>
+      <li><button class="side-link" data-go="adm-tour"><span class="n">28</span>Torneos · duplicar</button></li>
+      <li><button class="side-link" data-go="fin"><span class="n">29</span>Reporte financiero</button></li>
+      <li><button class="side-link" data-go="chk"><span class="n">30</span>Checklist del torneo</button></li>
+      <li><button class="side-link" data-go="adm-waiver"><span class="n">31</span>Cartas responsivas</button></li>
+      <li><button class="side-link" data-go="msg"><span class="n">32</span>Mensajes masivos</button></li>
     </ul></div>
     <div class="side-group"><h3 class="s">Jugador · extras</h3><ul>
-      <li><button class="side-link" data-go="waiver"><span class="n">32</span>Carta responsiva</button></li>
-      <li><button class="side-link" data-go="wa"><span class="n">33</span>WhatsApp LEVA · bot</button></li>
+      <li><button class="side-link" data-go="waiver"><span class="n">33</span>Carta responsiva</button></li>
+      <li><button class="side-link" data-go="wa"><span class="n">34</span>WhatsApp LEVA · bot</button></li>
     </ul></div>
     <div class="side-group"><h3 class="s">Sponsors · admin</h3><ul>
-      <li><button class="side-link" data-go="adm-sp"><span class="n">34</span>Sponsors · alta</button></li>
-      <li><button class="side-link" data-go="adm-pkg"><span class="n">35</span>Paquetes</button></li>
-      <li><button class="side-link" data-go="adm-inv"><span class="n">36</span>Inventario de espacios</button></li>
-      <li><button class="side-link" data-go="adm-qr"><span class="n">37</span>QR por cancha</button></li>
-      <li><button class="side-link" data-go="expo"><span class="n">38</span>Reporte de exposición</button></li>
+      <li><button class="side-link" data-go="adm-sp"><span class="n">35</span>Sponsors · alta</button></li>
+      <li><button class="side-link" data-go="adm-pkg"><span class="n">36</span>Paquetes</button></li>
+      <li><button class="side-link" data-go="adm-inv"><span class="n">37</span>Inventario de espacios</button></li>
+      <li><button class="side-link" data-go="adm-qr"><span class="n">38</span>QR por cancha</button></li>
+      <li><button class="side-link" data-go="expo"><span class="n">39</span>Reporte de exposición</button></li>
     </ul></div>
     <div class="side-group"><h3 class="s">Sponsors · jugador</h3><ul>
-      <li><button class="side-link" data-go="tload"><span class="n">39</span>Pantalla de carga</button></li>
-      <li><button class="side-link" data-go="benef"><span class="n">40</span>Mis beneficios</button></li>
-      <li><button class="side-link" data-go="plates"><span class="n">41</span>Placas para compartir</button></li>
-      <li><button class="side-link" data-go="offer"><span class="n">42</span>QR de cancha · oferta</button></li>
+      <li><button class="side-link" data-go="tload"><span class="n">40</span>Pantalla de carga</button></li>
+      <li><button class="side-link" data-go="benef"><span class="n">41</span>Mis beneficios</button></li>
+      <li><button class="side-link" data-go="plates"><span class="n">42</span>Placas para compartir</button></li>
+      <li><button class="side-link" data-go="offer"><span class="n">43</span>QR de cancha · oferta</button></li>
     </ul></div>
     <div class="side-group"><h3 class="s">Marcador de cancha</h3><ul>
-      <li><button class="side-link" id="open-cb"><span class="n">43</span>Marcador de cancha</button></li>
-      <li><button class="side-link" data-go="shots"><span class="n">44</span>Fotos para el marcador</button></li>
-      <li><button class="side-link" data-go="adm-cb"><span class="n">45</span>Admin · Marcador de cancha</button></li>
+      <li><button class="side-link" id="open-cb"><span class="n">44</span>Marcador de cancha</button></li>
+      <li><button class="side-link" data-go="shots"><span class="n">45</span>Fotos para el marcador</button></li>
+      <li><button class="side-link" data-go="adm-cb"><span class="n">46</span>Admin · Marcador de cancha</button></li>
+      <li><button class="side-link" id="open-txp"><span class="n">47</span>Control de transmisión</button></li>
     </ul></div>
     <div class="side-cta">
       <button class="btn btn-gold btn-s" id="open-tv" style="width:100%"><svg class="i"><use href="#i-tv"/></svg>Pantalla TV</button>
@@ -2344,6 +2602,7 @@ body.cal-s #d-cal .tray .mb{min-height:76px}
               <button class="btn btn-dark btn-s chamf" style="flex:1" data-go="schedule"><svg class="i"><use href="#i-clock"/></svg>Mis horarios</button>
             </div>
 
+            <div data-yt="home"></div>
             <div class="sec-h" style="margin-top:24px"><span class="d">Torneos</span></div>
             <button class="poster" data-go="event">
               <svg class="poster-stripes" viewBox="0 0 350 250" preserveAspectRatio="none" aria-hidden="true">
@@ -2564,6 +2823,7 @@ body.cal-s #d-cal .tray .mb{min-height:76px}
           <div class="appbar"><button class="icon-btn ghost" data-back aria-label="Atrás"><svg class="i"><use href="#i-back"/></svg></button><span class="title s">C1 · 4ta · Cuartos</span><button class="icon-btn ghost" aria-label="Compartir" data-toast="Link del marcador copiado"><svg class="i"><use href="#i-share"/></svg></button></div>
           <div class="scroll">
             <div class="live-head"><span class="tag tag-live">En vivo</span></div>
+            <div data-yt="live"></div>
             <div class="sp-line" id="lv-cat-sp"></div>
             <div class="duel" style="margin-top:18px">
               <div class="pair" style="font-size:34px">Romo<br>Alcalá<small>Sembrados #2</small></div>
@@ -3085,6 +3345,9 @@ body.cal-s #d-cal .tray .mb{min-height:76px}
             <select class="sel" id="acb-court"></select>
             <label class="label" for="acb-match">Partido que se muestra</label>
             <select class="sel" id="acb-match"></select>
+            <label class="label" for="acb-yt">Link de la transmisión en YouTube</label>
+            <div style="display:flex;gap:8px"><input class="sel" id="acb-yt" type="url" inputmode="url" placeholder="youtube.com/live/… o youtu.be/…" style="flex:1;min-width:0" aria-describedby="acb-yt-msg"><button class="btn btn-dark btn-s" id="acb-yt-save" type="button" style="flex:none;width:auto;padding:0 16px">Guardar</button></div>
+            <p class="faint" id="acb-yt-msg" role="status" aria-live="polite" style="font-size:12.5px;margin-top:6px">Sale en Inicio y en la ficha del partido como “En vivo”.</p>
             <div class="sec-h"><span class="d">Espacios de sponsor</span></div>
             <div id="acb-sp"></div>
             <p class="note" style="margin-top:14px"><svg class="i"><use href="#i-info"/></svg><span>El sponsor nunca tapa el marcador, los nombres ni el saque mientras se juega un punto. Los spots no salen en game point, set point ni match point.</span></p>
@@ -3433,6 +3696,74 @@ body.cal-s #d-cal .tray .mb{min-height:76px}
   </div>
   <div class="tv-ctl" id="tvcal-ctl"><button id="tvcal-exit"><svg class="i"><use href="#i-close"/></svg>Salir (Esc)</button></div>
 </div>
+
+<!-- ================= TV · TABLERO DE PRÓXIMOS PARTIDOS (estilo aeropuerto) ================= -->
+<div class="tv" id="tvboard" aria-label="Pantalla TV · tablero de próximos partidos">
+  <div class="tv-stage tvb" id="tvb-stage">
+    <header class="tvb-top">
+      <svg class="sh"><use href="#shield"/></svg>
+      <div class="ev"><h2 class="d"><span class="gold">Próximos</span> partidos</h2><div class="s">Circuito LEVA · Padel Sport · Sábado 24</div></div>
+      <div class="tvb-clock"><div class="s">Hora</div><div class="d num" id="tvb-clock">17:10</div></div>
+    </header>
+    <div class="tvb-head" id="tvb-head" aria-hidden="true"></div>
+    <div class="tvb-rows" id="tvb-rows" role="list" aria-label="Próximos partidos"></div>
+    <p class="tvb-empty d" id="tvb-empty" hidden>Sin más partidos hoy</p>
+    <div class="tvb-foot">
+      <span class="lgd"><i class="pres on" aria-hidden="true"></i>Presente</span>
+      <span class="lgd"><i class="pres" aria-hidden="true"></i>Ausente</span>
+      <span class="faint">Sigue tu partido en la app LEVA</span>
+      <span class="pg"><span id="tvb-pg"></span><span class="bar" id="tvb-bar" hidden><i></i></span></span>
+    </div>
+    <div class="tvb-sp"><span class="tvb-lb s">Presentan</span><div class="tvb-sp-in" id="tvb-sp"></div></div>
+  </div>
+  <div class="tv-ctl">
+    <button id="tvb-sim" aria-pressed="false"><svg class="i"><use href="#i-play"/></svg><span>Simular llegadas</span></button>
+    <button id="tvb-reset"><svg class="i"><use href="#i-undo"/></svg><span>Estado inicial</span></button>
+    <button id="tvb-snd" aria-pressed="false"><svg class="i"><use href="#i-speaker"/></svg><span>Sonido de tablero: no</span></button>
+    <button id="tvb-exit"><svg class="i"><use href="#i-close"/></svg>Salir (Esc)</button>
+  </div>
+</div>
+
+<!-- ================= TRANSMISIÓN · panel del operador ================= -->
+<div class="txp" id="txp" role="region" aria-label="Control de transmisión">
+  <header class="txp-top">
+    <svg class="sh"><use href="#shield"/></svg>
+    <div><div class="d"><span class="gold">Control de</span> transmisión</div><div class="s" id="txp-sub">Cancha de transmisión</div></div>
+    <div class="txp-st"><span class="tag tag-live">En vivo</span><span id="txp-on">Al aire: Previa</span></div>
+    <button class="icon-btn ghost" id="txp-exit" aria-label="Cerrar el control de transmisión"><svg class="i"><use href="#i-close"/></svg></button>
+  </header>
+  <div class="txp-main">
+    <div>
+      <div class="txp-prev" id="txp-prev" aria-label="Vista previa de la escena al aire">
+        <svg class="ov-court" viewBox="0 0 1600 900" preserveAspectRatio="none" aria-hidden="true"><g fill="none" stroke="rgba(255,255,255,.75)" stroke-width="5"><path d="M330 840 L560 180 H1040 L1270 840 Z"/><path d="M800 180 V840"/><path d="M420 590 H1180"/><path d="M500 360 H1100"/></g><path d="M250 520 H1350" stroke="rgba(255,255,255,.9)" stroke-width="9"/><path d="M250 520 V470 H1350 V520" fill="rgba(255,255,255,.12)" stroke="rgba(255,255,255,.5)" stroke-width="3"/></svg>
+        <div class="ov-stage" id="txp-stage"></div>
+      </div>
+      <div class="txp-prev-cap"><span>Vista previa de la salida “Programa” · el fondo es la cámara en OBS</span><span id="txp-clock"></span></div>
+      <div class="txp-sc" id="txp-sc" role="group" aria-label="Escenas"></div>
+    </div>
+    <div class="txp-side">
+      <div class="txp-card">
+        <h3 class="d">Modo</h3>
+        <div class="opt"><div><b>Automático</b><small>Momento clave cuando hay game, set o match point; entre sets al cerrar un set; final al terminar</small></div><button class="switch" role="switch" aria-checked="true" id="txp-auto" aria-label="Cambio automático de escena"></button></div>
+        <div class="opt"><div><b>Espectadores en la barra</b><small>Simulado en el prototipo</small></div><button class="switch" role="switch" aria-checked="true" id="txp-views" aria-label="Mostrar espectadores"></button></div>
+      </div>
+      <div class="txp-card">
+        <h3 class="d">Juez · atajo de prueba</h3>
+        <p class="faint" style="font-size:12.5px">Carga puntos con el mismo marcador del juez (pantalla 15). La barra cambia al instante.</p>
+        <div class="txp-j" id="txp-j"></div>
+      </div>
+      <div class="txp-card">
+        <h3 class="d">URL para OBS</h3>
+        <p class="faint" style="font-size:12.5px;margin-bottom:6px">Fuente de navegador · 1920 × 1080 · fondo transparente. “Programa” sigue a este panel.</p>
+        <div id="txp-urls"></div>
+        <div class="txp-msg" id="txp-msg" role="status" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= TRANSMISIÓN · escena sola para OBS (#overlay=…) ================= -->
+<div id="ovl" aria-label="Escena de transmisión"><div class="ov-stage" id="ovl-stage"></div></div>
 
 <script id="leva-ranking">
 /* =========================================================
@@ -4589,7 +4920,7 @@ const SIM = { t: 1030 * 60, speed: 1 };
 const simMin = () => SIM.t / 60;
 let simT = null, lastTick = 0, lastMin = -1;
 function simStart() { if (simT) return; lastTick = performance.now(); simT = setInterval(simTick, 250); }
-function simStop() { if (desk.classList.contains('on') || $('#tvcal').classList.contains('on')) return; clearInterval(simT); simT = null; }
+function simStop() { if (desk.classList.contains('on') || $('#tvcal').classList.contains('on') || $('#tvboard').classList.contains('on')) return; clearInterval(simT); simT = null; }
 function simTick() {
   const n = performance.now(); SIM.t = Math.min(CLOSE_MIN * 60, SIM.t + (n - lastTick) / 1000 * SIM.speed); lastTick = n;
   const changed = tolTick();
@@ -4625,8 +4956,8 @@ function mbHTML(m, o = {}) {
   const where = m.c == null ? 'sin asignar' : `cancha ${m.c + 1} a las ${clockStr(m.start)}`;
   const cb = !o.ro && m.c != null && callBtns(m, true, m !== nextOn(m.c)); // botón Llamar dentro del bloque (solo hoy y por jugar o llamado)
   const tag = !cb ? '' : s === 'called' ? `<b data-timer="${m.id}">${mmss(elapsedOf(m))}</b>` : s === 'late' ? `<b>+${Math.floor(simMin() - m.start)} min</b>` : '';
-  return `<div class="mb s-${s} ${cb ? 'callable' : ''} ${m.id === selId && !o.ro ? 'sel' : ''} ${o.cls || ''}" ${o.ro ? '' : `role="button" tabindex="0" aria-label="${catN(m.cat)} ${m.rd}: ${A} contra ${B}, ${where}, ${ST_TXT[s]}" title="${catN(m.cat)} · ${m.rd}&#10;${A} vs ${B}&#10;${where[0].toUpperCase() + where.slice(1)} · ${ST_TXT[s]}"`} data-id="${m.id}" style="${catVar(m.cat)};${o.style || ''}">
-    <span class="k"><span>${catN(m.cat)} · ${m.rd}</span>${tag}</span><span class="p ${pc('a')}">${A.replace(' / ', '/')}</span>${cb ? '' : '<span class="v">VS</span>'}<span class="p ${pc('b')}">${B.replace(' / ', '/')}</span>${cb ? `<span class="mb-acts">${cb}</span>` : `<span class="st">${stLabel(m, s)}</span>`}</div>`;
+  return `<div class="mb s-${s} ${cb ? 'callable' : ''} ${m.id === selId && !o.ro ? 'sel' : ''} ${o.cls || ''}" ${o.ro ? '' : `role="button" tabindex="0" aria-label="${catN(m.cat)} ${m.rd}: ${A} contra ${B}, ${where}, ${ST_TXT[s]}${presHTML(m, 0) ? ', ' + arrTxt(m) : ''}" title="${catN(m.cat)} · ${m.rd}&#10;${A} vs ${B}&#10;${where[0].toUpperCase() + where.slice(1)} · ${ST_TXT[s]}"`} data-id="${m.id}" style="${catVar(m.cat)};${o.style || ''}">
+    <span class="k"><span>${catN(m.cat)} · ${m.rd}</span>${tag}</span><span class="p ${pc('a')}">${presHTML(m, 0)}${A.replace(' / ', '/')}</span>${cb ? '' : '<span class="v">VS</span>'}<span class="p ${pc('b')}">${presHTML(m, 1)}${B.replace(' / ', '/')}</span>${cb ? `<span class="mb-acts">${cb}</span>` : `<span class="st">${stLabel(m, s)}</span>`}</div>`;
 }
 
 /* ---- Conflictos: jugador en dos partidos a la vez y descanso mínimo ---- */
@@ -4947,7 +5278,8 @@ function callMatch(m, src = 'laptop') {
   const text = callText(m);
   const it = say(text, 'Llamado a cancha', src !== 'automático', m.id);
   clog(`#${m.id} (${src}) 1/4 encolado en el voceo como aviso #${it.id}, posición ${VO.q.indexOf(it) + 1 || 'al aire'}: “${text}”`);
-  Object.assign(m, { st: 'called', calledAt: SIM.t, ck: [false, false], ckAt: null, fl: {}, extra: 0 });
+  // Las llegadas previas se conservan: si las dos parejas ya están, el cronómetro de tolerancia nace detenido
+  Object.assign(m, { st: 'called', calledAt: SIM.t, ckAt: m.ck[0] && m.ck[1] ? SIM.t : null, fl: {}, extra: 0 });
   clog(`#${m.id} 2/4 estado: ${before} → ${ST_TXT.called}`);
   clog(`#${m.id} 3/4 cronómetro de tolerancia arrancó a las ${clockStr(simMin())} (${CFG.tol} min)`);
   showPush(m, 'call'); waCall(m);
@@ -4966,7 +5298,7 @@ function cancelCall(m) {
   if (m.st !== 'called') return;
   const n = VO.q.length; VO.q = VO.q.filter(x => x.mid !== m.id);
   if (VO.cur && VO.cur.mid === m.id) $('#vo-skip').click(); // si está sonando, se corta
-  Object.assign(m, { st: 'pend', calledAt: null, ck: [false, false], ckAt: null, fl: {}, extra: 0 });
+  Object.assign(m, { st: 'pend', calledAt: null, ckAt: null, fl: {}, extra: 0 }); // las llegadas siguen valiendo
   clog(`#${m.id} llamado cancelado: vuelve a "${ST_TXT.pend}", cronómetro detenido, ${n - VO.q.length} aviso(s) quitados de la cola`);
   renderAll(); dkToast(`Llamado cancelado en cancha ${m.c + 1}. Avisamos a los 4 jugadores`);
 }
@@ -5061,12 +5393,21 @@ function tolTick() {
   });
   return ch;
 }
+/* El check-in marca la llegada de la pareja: vale antes del llamado (tablero: "1 de 2 parejas", "Listos")
+   y después (detiene el cronómetro de tolerancia). Calendario, torre y tablero leen el mismo m.ck. */
 function checkin(m, i) {
+  if (m.ck[i]) return;
   m.ck[i] = true;
-  if (m.ck[0] && m.ck[1]) { m.ckAt = SIM.t; m.fl.prop = false; dkToast(`Check-in completo en cancha ${m.c + 1}: cronómetro detenido en ${mmss(elapsedOf(m))}`); }
+  const both = m.ck[0] && m.ck[1];
+  if (m.st === 'called' && both) { m.ckAt = SIM.t; m.fl.prop = false; dkToast(`Check-in completo en cancha ${m.c + 1}: cronómetro detenido en ${mmss(elapsedOf(m))}`); }
+  else if (both) dkToast(`Listos en cancha ${m.c + 1}: llegaron las dos parejas`);
   else dkToast(`QR de ${pn(i ? m.b : m.a)} leído`);
   renderAll();
 }
+const arrTxt = m => m.ck[0] && m.ck[1] ? 'llegaron las dos parejas' : m.ck[0] || m.ck[1] ? `llegó ${pn(m.ck[0] ? m.a : m.b)}` : 'sin llegadas';
+/* Indicador de llegada junto a cada pareja (relleno = presente, aro vacío = ausente): solo en partidos de hoy por jugar o llamados */
+const presHTML = (m, i) => m.day !== TODAY || !['pend', 'called'].includes(m.st) ? ''
+  : `<i class="pres ${m.ck[i] ? 'on' : ''}" title="${m.ck[i] ? 'Presente' : 'Ausente'}" aria-hidden="true"></i>`;
 function confirmDefault(m) {
   const miss = [0, 1].filter(i => !m.ck[i]);
   const L = miss.length === 2 ? null : (miss[0] === 1 ? m.b : m.a);
@@ -5195,7 +5536,7 @@ function renderTower() {
   </div>
   <div class="nx"><div class="dk-h"><span class="d">Próximos 5 por cancha</span></div>
     <div class="nx-grid">${courts.map(x => `<div class="nx-col"><h4>Cancha <span class="gold">${x.c + 1}</span></h4>${T.filter(m => m.c === x.c && ['pend', 'called'].includes(m.st)).sort((a, b) => a.start - b.start).slice(0, 5).map(m =>
-      `<div class="nx-it" style="${catVar(m.cat)}"><span class="t ${stOf(m) === 'late' ? 'late' : ''}">${clockStr(m.start)}</span><div><b>${pn(m.a)}</b><b>${pn(m.b)}</b><small>${catN(m.cat)} · ${m.rd}${m.st === 'called' ? ' · Llamado' : ''}</small></div><div class="nx-call">${callBtns(m, false, m !== x.next)}</div></div>`).join('') || '<div class="dk-empty">Sin partidos</div>'}</div>`).join('')}</div>
+      `<div class="nx-it" style="${catVar(m.cat)}"><span class="t ${stOf(m) === 'late' ? 'late' : ''}">${clockStr(m.start)}</span><div><b>${presHTML(m, 0)}${pn(m.a)}</b><b>${presHTML(m, 1)}${pn(m.b)}</b><small>${catN(m.cat)} · ${m.rd}${m.st === 'called' ? ' · Llamado' : ''}</small></div><div class="nx-call">${callBtns(m, false, m !== x.next)}</div></div>`).join('') || '<div class="dk-empty">Sin partidos</div>'}</div>`).join('')}</div>
   </div>`;
 }
 $('#tw').addEventListener('click', e => {
@@ -5603,6 +5944,7 @@ function updateLive() {
 function renderAll() {
   if (desk.classList.contains('on')) { renderCal(); renderTol(); renderTower(); }
   if ($('#tvcal').classList.contains('on')) renderTvCal();
+  if ($('#tvboard').classList.contains('on')) renderBoard();
   if ($('#orgph').classList.contains('on')) renderPhone();
   syncFree(); renderVoceo(); updateLive();
 }
@@ -5632,11 +5974,217 @@ addEventListener('keydown', e => {
   if (e.key !== 'Escape') return;
   if ($('#dlg').classList.contains('on')) { if (dlgEsc >= 0) closeDlg(dlgEsc); return; }
   if ($('#tvcal').classList.contains('on')) { closeTvCal(); return; }
+  if ($('#tvboard').classList.contains('on')) { closeTvBoard(); return; }
   if (desk.classList.contains('on') && !tv.classList.contains('on')) closeDesk();
 });
 
 // Gancho de verificación: LEVA_TEST.voceo.log guarda inicio y fin de cada aviso (no se superponen)
 window.LEVA_TEST = { requestCall, callMatch, recallMatch, cancelCall, nextOn, callText, AUTO, voceo: VO, audio: AU, sfx: SFX, playSfx, phrases, say, conflictsFor, byId, M, tryMove };
+
+/* =========================================================
+   TV · TABLERO DE PRÓXIMOS PARTIDOS (estilo aeropuerto, letras split-flap)
+   Lee el mismo estado que el calendario y la torre (M, m.ck, stOf): un check-in, un llamado, el inicio o fin
+   de un partido, un atraso o un cambio de horario se ven en los tres a la vez. Solo gira la celda que cambió.
+   PRODUCCIÓN: el tablero escucha events/{eventId}/matches con onSnapshot (Firestore, tiempo real); aquí todo
+   vive en la misma página y se repinta desde renderAll().
+   ========================================================= */
+const TVB = { rows: 5, rowH: 140, pageMs: 12000, finMs: 8000, page: 0, pageAt: 0, sound: false, sim: null, fin: {}, seen: new Set(), lastSnd: 0, t: null };
+M.forEach(m => { m.plan = m.start; }); // hora original: si el calendario la corre, el tablero muestra "Atrasado +N'"
+// Estado inicial para "Estado inicial" del simulador
+const TVB_KEYS = ['st', 'ck', 'ckAt', 'calledAt', 'fl', 'extra', 'start', 'c', 'day', 'sc', 'w', 'conf', 'endAt', 'prev'];
+const TVB_INIT = { t: SIM.t, m: M.map(m => JSON.parse(JSON.stringify(Object.fromEntries(TVB_KEYS.filter(k => k in m).map(k => [k, m[k]]))))) };
+const TVB_ST = { // estado → texto (nunca solo color), ícono y clase
+  wait: { t: 'Esperando parejas', i: 'i-user' }, half: { t: '1 de 2 parejas', i: 'i-user' }, ready: { t: 'Listos', i: 'i-check' },
+  call: { t: 'A cancha', i: 'i-speaker' }, live: { t: 'En juego', i: '' }, late: { t: 'Atrasado', i: 'i-clock' },
+  fin: { t: 'Finalizado', i: 'i-trophy' }, def: { t: 'Default', i: 'i-close' },
+};
+function tvbState(m) {
+  const s = stOf(m);
+  if (s === 'def') return { k: 'def', t: TVB_ST.def.t };
+  if (s === 'done') return { k: 'fin', t: TVB_ST.fin.t };
+  if (s === 'live') return { k: 'live', t: TVB_ST.live.t };
+  if (s === 'called') return { k: 'call', t: TVB_ST.call.t };
+  const late = Math.max(s === 'late' ? Math.floor(simMin() - m.start) : 0, m.start - m.plan);
+  if (late > 0) return { k: 'late', t: `Atrasado +${late}'` };
+  const n = m.ck.filter(Boolean).length;
+  return n === 2 ? { k: 'ready', t: TVB_ST.ready.t } : n === 1 ? { k: 'half', t: TVB_ST.half.t } : { k: 'wait', t: TVB_ST.wait.t };
+}
+/* Partidos de hoy con cancha: los que siguen, ordenados por hora. Los finalizados se quedan unos segundos
+   con "Finalizado" (o "Default") y salen; los que ya estaban terminados al abrir el tablero no entran. */
+function tvbList() {
+  const wall = performance.now();
+  return M.filter(m => m.day === TODAY && m.c != null).filter(m => {
+    if (m.st !== 'done' && m.st !== 'def') return true;
+    if (!TVB.seen.has(m.id)) return false;
+    if (!(m.id in TVB.fin)) TVB.fin[m.id] = wall;
+    return wall - TVB.fin[m.id] < TVB.finMs;
+  }).sort((x, y) => x.start - y.start || x.c - y.c).slice(0, 20); // como máximo 4 páginas: una vuelta en 48 s
+}
+const tvbCut = (t, n) => t.length > n ? t.slice(0, n - 1) + '…' : t;
+const tvbCells = m => {
+  const st = tvbState(m);
+  return { st, f: { t: clockStr(m.start), a: tvbCut(pn(m.a), 20), b: tvbCut(pn(m.b), 20), cat: catN(m.cat), rd: m.rd, c: String(m.c + 1), st: st.t } };
+};
+const tiles = txt => [...txt].map(ch => `<b${ch === ' ' ? ' class="sp"' : ''}>${ch === ' ' ? '&nbsp;' : escH(ch)}</b>`).join('');
+const FLAP_CH = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+
+/* Celda split-flap: cada letra que cambia gira por letras al azar y se detiene en la nueva, de izquierda
+   a derecha (máximo 1.2 s). Con movimiento reducido el texto cambia con un fundido corto. */
+function flapSet(el, txt, animate) {
+  txt = txt.toUpperCase();
+  const from = el.dataset.v;
+  if (from === txt) return false;
+  el.dataset.v = txt; el.previousElementSibling.textContent = txt; // .sr-only: lo que lee el lector de pantalla
+  cancelAnimationFrame(el._raf);
+  if (!animate || from == null) { el.innerHTML = tiles(txt); return false; }
+  if (REDUCE) { el.innerHTML = tiles(txt); el.animate([{ opacity: .2 }, { opacity: 1 }], { duration: 220, easing: 'ease' }); return true; }
+  const L = Math.max(from.length, txt.length), a = from.padEnd(L), b = txt.padEnd(L);
+  el.innerHTML = tiles(a);
+  const ts = [...el.children], t0 = performance.now();
+  const stop = [...b].map((ch, i) => ch === a[i] ? 0 : Math.min(1150, 240 + i * 28 + Math.random() * 160));
+  const last = new Array(L).fill(-1);
+  const flip = (t, ch) => { t.textContent = ch === ' ' ? ' ' : ch; t.classList.toggle('sp', ch === ' '); t.animate([{ transform: 'rotateX(-82deg)', filter: 'brightness(.55)' }, { transform: 'none', filter: 'none' }], { duration: 70, easing: 'ease-out' }); };
+  const step = now => {
+    const e = now - t0; let busy = false;
+    stop.forEach((s, i) => {
+      if (!s) return;
+      if (e >= s) { if (last[i] !== -2) { flip(ts[i], b[i]); last[i] = -2; } return; }
+      busy = true;
+      const k = Math.floor(e / 55); if (k !== last[i]) { last[i] = k; flip(ts[i], FLAP_CH[(Math.random() * FLAP_CH.length) | 0]); }
+    });
+    if (busy) el._raf = requestAnimationFrame(step);
+    else el.innerHTML = tiles(txt); // largo final exacto
+  };
+  el._raf = requestAnimationFrame(step);
+  tvbSound();
+  return true;
+}
+/* Sonido opcional de paleta: clics cortos de ruido filtrado (Web Audio, sin archivos) */
+function tvbSound() {
+  if (!TVB.sound || REDUCE) return;
+  const now = performance.now(); if (now - TVB.lastSnd < 400) return; TVB.lastSnd = now;
+  const c = ctxOk(); if (!c || c.state !== 'running') return;
+  const bp = c.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 2400; bp.Q.value = 1.4;
+  const out = c.createGain(); out.gain.value = .22; bp.connect(out).connect(c.destination);
+  for (let k = 0, t = c.currentTime; k < 18; k++, t += .028 + k * .0018) {
+    const n = noise(c, .012), g = c.createGain();
+    g.gain.setValueAtTime(.9 - k * .03, t); g.gain.exponentialRampToValueAtTime(.001, t + .012);
+    n.connect(g).connect(bp); n.start(t); n.stop(t + .014);
+  }
+}
+const tvbRowHTML = m => `<div class="tvb-cell c-t"><span class="sr-only"></span><span class="flap" data-f="t" aria-hidden="true"></span></div>
+  <div class="tvb-cell c-m"><div class="tvb-pr"><i class="pres" aria-hidden="true"></i><span class="sr-only"></span><span class="flap" data-f="a" aria-hidden="true"></span></div>
+    <span class="tvb-vs" aria-hidden="true">vs</span>
+    <div class="tvb-pr"><i class="pres" aria-hidden="true"></i><span class="sr-only"></span><span class="flap" data-f="b" aria-hidden="true"></span></div></div>
+  <div class="tvb-cell c-k"><span class="sr-only"></span><span class="flap" data-f="cat" aria-hidden="true"></span><span class="sr-only"></span><span class="flap" data-f="rd" aria-hidden="true"></span></div>
+  <div class="tvb-cell c-c"><span class="sr-only"></span><span class="flap" data-f="c" aria-hidden="true"></span></div>
+  <div class="tvb-cell c-s"><span class="sti" aria-hidden="true"></span><span class="sr-only"></span><span class="flap" data-f="st" aria-hidden="true"></span></div>`;
+function tvbPaint(row, m, animate) {
+  const { st, f } = tvbCells(m), changed = [];
+  Object.entries(f).forEach(([k, v]) => { if (flapSet($(`[data-f="${k}"]`, row), v, animate)) changed.push(k); });
+  if (row.dataset.k !== st.k) {
+    if (row.dataset.k) row.classList.remove('st-' + row.dataset.k);
+    row.classList.add('st-' + st.k); row.dataset.k = st.k;
+    $('.sti', row).innerHTML = TVB_ST[st.k].i ? ic(TVB_ST[st.k].i) : '<i class="dot"></i>';
+  }
+  $$('.pres', row).forEach((p, i) => {
+    const show = !['live', 'fin', 'def'].includes(st.k), on = !!m.ck[i] && show;
+    p.style.visibility = show ? '' : 'hidden'; // conserva el lugar: los nombres quedan alineados
+    if (p.classList.contains('on') !== on) {
+      p.classList.toggle('on', on); p.dataset.lbl = on ? 'Presente' : 'Ausente';
+      if (animate && on && !REDUCE) p.animate([{ transform: 'scale(.6)', opacity: .3 }, { transform: 'none', opacity: 1 }], { duration: 260, easing: EASE_OUT });
+    }
+    $$('.sr-only', row)[1 + i].textContent = `${f[i ? 'b' : 'a']}, ${on ? 'presente' : 'ausente'}`;
+  });
+  return changed;
+}
+/* Pinta la página actual: crea, mueve (reordena por hora), actualiza o saca filas. Devuelve qué celdas giraron. */
+function renderBoard() {
+  const list = tvbList(), pages = Math.max(1, Math.ceil(list.length / TVB.rows)), now = performance.now();
+  list.forEach(m => { if (m.st !== 'done' && m.st !== 'def') TVB.seen.add(m.id); });
+  let swap = false;
+  if (TVB.page >= pages) { TVB.page = 0; swap = true; }
+  else if (pages > 1 && now - TVB.pageAt >= TVB.pageMs) { TVB.page = (TVB.page + 1) % pages; swap = true; }
+  if (swap || pages === 1) TVB.pageAt = now; // con una sola página el contador espera los 12 s completos
+  const vis = list.slice(TVB.page * TVB.rows, TVB.page * TVB.rows + TVB.rows), box = $('#tvb-rows'), log = [];
+  const rows = new Map($$('.tvb-r:not(.out)', box).map(r => [+r.dataset.id, r]));
+  rows.forEach((r, id) => {
+    if (vis.some(m => m.id === id)) return;
+    const m = byId(id), gone = m && (m.st === 'done' || m.st === 'def');
+    r.classList.add('out', gone ? 'gone' : 'page'); setTimeout(() => r.remove(), 560);
+  });
+  vis.forEach((m, i) => {
+    let r = rows.get(m.id);
+    const y = `translateY(${i * TVB.rowH}px)`;
+    if (!r) {
+      r = document.createElement('div'); r.className = 'tvb-r enter'; r.dataset.id = m.id; r.innerHTML = tvbRowHTML(m);
+      r.setAttribute('role', 'listitem'); r.style.setProperty('--cat', `var(--cat-${m.cat})`);
+      r.style.transform = y; box.append(r); tvbPaint(r, m, false);
+      r.style.transitionDelay = swap ? `${i * 45}ms` : '0ms';
+      requestAnimationFrame(() => requestAnimationFrame(() => r.classList.remove('enter')));
+    } else {
+      r.style.transitionDelay = '0ms'; r.style.transform = y;
+      const ch = tvbPaint(r, m, true); if (ch.length) log.push({ id: m.id, cells: ch });
+    }
+  });
+  $('#tvb-pg').textContent = pages > 1 ? `Página ${TVB.page + 1} de ${pages}` : '';
+  const bar = $('#tvb-bar'); bar.hidden = pages < 2;
+  if (swap || bar.dataset.p !== `${TVB.page}/${pages}`) {
+    bar.dataset.p = `${TVB.page}/${pages}`;
+    bar.firstElementChild.getAnimations().forEach(a => a.cancel());
+    bar.firstElementChild.animate([{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], { duration: TVB.pageMs - (now - TVB.pageAt), easing: 'linear', fill: 'forwards' });
+  }
+  $('#tvb-empty').hidden = list.length > 0; $('#tvb-head').hidden = !list.length;
+  $('#tvb-clock').textContent = clockStr(simMin());
+  if (log.length) console.info('[tablero] giraron:', log.map(x => `#${x.id} ${x.cells.join(', ')}`).join(' · '));
+  TVB.lastLog = log;
+  return log;
+}
+function fitTvBoard() { const s = Math.min(innerWidth / 1920, innerHeight / 1080); $('#tvb-stage').style.transform = `translate(-50%,-50%) scale(${s})`; }
+function openTvBoard() {
+  $('#tvboard').classList.add('on'); fitTvBoard(); simStart();
+  TVB.page = 0; TVB.pageAt = performance.now(); $('#tvb-rows').innerHTML = '';
+  TVB.seen = new Set(); TVB.fin = {}; // lo que ya terminó antes de abrir no entra
+  renderBoard(); clearInterval(TVB.t); TVB.t = setInterval(renderBoard, 1000);
+}
+function closeTvBoard() { simulateArrivals(false); $('#tvboard').classList.remove('on'); clearInterval(TVB.t); simStop(); }
+
+/* ---- Simulador: check-in de parejas al azar cada pocos segundos ----
+   PRODUCCIÓN: no existe; cada QR leído escribe events/{eventId}/matches/{id}.call.checkIn en Firestore
+   y el tablero, el calendario y la torre lo reciben en tiempo real con onSnapshot. */
+function simulateArrivals(on) {
+  clearInterval(TVB.sim); TVB.sim = on ? setInterval(arriveOne, 2600) : null;
+  const b = $('#tvb-sim'); b.setAttribute('aria-pressed', !!on); b.lastElementChild.textContent = on ? 'Detener llegadas' : 'Simular llegadas';
+  if (on) arriveOne();
+}
+function arriveOne() {
+  const cand = M.filter(m => m.day === TODAY && m.c != null && ['pend', 'called'].includes(m.st) && !(m.ck[0] && m.ck[1]))
+    .sort((x, y) => x.start - y.start).slice(0, 8);
+  if (!cand.length) { simulateArrivals(false); dkToast('Ya llegaron todas las parejas de los próximos partidos'); return; }
+  const m = cand[(Math.random() * cand.length) | 0], miss = [0, 1].filter(i => !m.ck[i]);
+  checkin(m, miss[(Math.random() * miss.length) | 0]);
+}
+function resetBoard() {
+  simulateArrivals(false);
+  M.forEach((m, i) => { TVB_KEYS.forEach(k => delete m[k]); Object.assign(m, JSON.parse(JSON.stringify(TVB_INIT.m[i]))); });
+  SIM.t = TVB_INIT.t;
+  TVB.seen = new Set(); TVB.fin = {}; TVB.page = 0; TVB.pageAt = performance.now(); $('#tvb-rows').innerHTML = '';
+  renderAll(); dkToast('Tablero en el estado inicial');
+}
+$('#tvb-head').innerHTML = ['Hora', 'Partido', 'Categoría y ronda', 'Cancha', 'Estado'].map((t, i) => `<span class="h${i}">${t}</span>`).join('');
+$('#tvb-sp').innerHTML = (h => REDUCE ? h : h + h)( // duplicado para el loop continuo; fijo con movimiento reducido
+SPN.map(s => `<span>${spEsc(s.n)}<i></i></span>`).join(''));
+$('#open-tvboard').addEventListener('click', openTvBoard);
+$('#tvb-exit').addEventListener('click', closeTvBoard);
+$('#tvb-sim').addEventListener('click', e => simulateArrivals(e.currentTarget.getAttribute('aria-pressed') !== 'true'));
+$('#tvb-reset').addEventListener('click', resetBoard);
+$('#tvb-snd').addEventListener('click', e => {
+  TVB.sound = e.currentTarget.getAttribute('aria-pressed') !== 'true'; e.currentTarget.setAttribute('aria-pressed', TVB.sound);
+  e.currentTarget.lastElementChild.textContent = TVB.sound ? 'Sonido de tablero: sí' : 'Sonido de tablero: no';
+  if (TVB.sound) { const c = ctxOk(); if (c) c.resume().catch(() => {}); }
+});
+addEventListener('resize', () => { if ($('#tvboard').classList.contains('on')) fitTvBoard(); });
+Object.assign(window.LEVA_TEST, { board: { TVB, tvbState, tvbList, renderBoard, openTvBoard, closeTvBoard, arriveOne, resetBoard, checkin, openDesk, closeDesk, renderAll, delayFrom, pn, simMin } });
 
 /* =========================================================
    JUGADOR · temporada (Bloque B): ranking, estadísticas y credencial
@@ -7874,8 +8422,293 @@ let mins = 42;
 setInterval(() => { if (mins > 1) { mins--; $('#countdown').textContent = mins + ' min'; } }, 60000);
 
 // Enlace directo: leva-app.html#home, #judge, #tv …
+/* =========================================================
+   TRANSMISIÓN EN VIVO · escenas para OBS, control del operador y "Ver en vivo"
+   El marcador sale del motor del juez (jm, ptLabel, setsWon) y los momentos de pointMoment, sin duplicar lógica:
+   cada punto que carga el juez dispara 'leva:score' y las escenas se repintan.
+   PRODUCCIÓN: el panel y los overlays de OBS se sincronizan con Firestore. El panel escribe
+   events/{eventId}/broadcast/{courtId} (escena, automático) y el juez el partido; cada Fuente de navegador de OBS
+   escucha esos documentos con onSnapshot. En el prototipo, las pestañas del mismo navegador se sincronizan con
+   BroadcastChannel (y localStorage como respaldo).
+   ========================================================= */
+const TX_SC = [
+  ['previa', 'Previa', 'Parejas, ronda y cancha'], ['juego', 'En juego', 'Barra de marcador en la esquina'],
+  ['clave', 'Momento clave', 'Game, set, match point y punto de oro'], ['sets', 'Entre sets', 'Resumen del set y spot'],
+  ['pausa', 'Pausa', 'Volvemos en un momento'], ['final', 'Final', 'Ganadores y resultado'],
+];
+const TX = { scene: 'previa', auto: true, viewers: 418, showViewers: true, momKey: '', momAt: 0, spotI: 0, pauseI: 0, prev: null, keyT: 0, yt: '' };
+try { TX.yt = localStorage.getItem('leva.tx.yt') || ''; } catch (e) { /* sin almacenamiento */ }
+const OVL = /^#overlay=/.test(location.hash) ? decodeURIComponent(location.hash.slice(9)) : null; // escena fija de esta pestaña (OBS)
+const TXC = (() => { try { return new BroadcastChannel('leva-tx'); } catch (e) { return null; } })();
+const COURT_SVG = '<svg class="ov-court" viewBox="0 0 1600 900" preserveAspectRatio="none" aria-hidden="true"><g fill="none" stroke="rgba(255,255,255,.75)" stroke-width="5"><path d="M330 840 L560 180 H1040 L1270 840 Z"/><path d="M800 180 V840"/><path d="M420 590 H1180"/><path d="M500 360 H1100"/></g><path d="M250 520 H1350" stroke="rgba(255,255,255,.9)" stroke-width="9"/></svg>';
+
+/* ---- Datos del partido de transmisión (los mismos del marcador de cancha) ---- */
+const txPair = s => cbM()[s].map(k => CB_PL[k].n).join(' / ');
+const txImg = k => `<img src="${SHOTS[k] ? SHOTS[k].src : portrait(k, true)}" alt="">`; // foto recortada del jugador o retrato de ejemplo
+const txCourt = () => { const cs = CB.sp.court && courtSp(CB.court); return cs ? `Cancha ${cs.short}` : `Cancha ${CB.court + 1}`; };
+const txOfficial = () => CB.sp.official ? spById(CB.sp.officialSp) : null;
+const txSign = () => CB.sp.sign ? spById(CB.sp.signSp) : null;
+const txWinner = m => { const w = setsWon(m); return w[0] === w[1] ? null : w[0] > w[1] ? 0 : 1; };
+function txClockStr() { // tiempo transcurrido desde el inicio del partido
+  const s = Math.max(0, Math.floor((Date.now() - CB.t0) / 1000)), mm = String(Math.floor(s / 60) % 60).padStart(2, '0'), ss = String(s % 60).padStart(2, '0');
+  return s >= 3600 ? `${Math.floor(s / 3600)}:${mm}:${ss}` : `${Math.floor(s / 60)}:${ss}`;
+}
+function txMoment(m) { // pointMoment sin tocar; solo se traduce a la etiqueta de la escena
+  const r = pointMoment(m);
+  return { r, lvl: r.tipo === 'ninguno' ? '' : r.oro && r.tipo === 'game point' ? 'oro' : r.tipo.split(' ')[0] };
+}
+const txMomTitle = (r, lvl) => lvl === 'oro' ? 'Punto de oro' : r.tipo;
+const txWho = r => r.pareja === 'ambas' ? 'Ambas parejas' : txPair(r.pareja);
+
+/* ---- Escenas ---- */
+const txBrand = t => `<div class="ov-brand"><svg aria-hidden="true"><use href="#shield"/></svg><div><div class="ov-d"><span class="gold">Circuito</span> LEVA</div><div class="ov-sup">${t}</div></div></div>`;
+function txBar(noTag) {
+  const m = jm, M = cbM(), n = m.sets.length, w = txWinner(m), who = servingIdx(m), mo = txMoment(m), off = txOfficial();
+  const row = t => {
+    const srv = !m.done && m.server === t;
+    const names = M[t ? 'B' : 'A'].map((k, i) => `${i ? '<span class="ov-sl">/</span>' : ''}<span class="${srv && who === i ? 'on' : ''}">${spEsc(CB_PL[k].n)}</span>`).join('');
+    const sets = m.sets.map(s => `<span class="ov-set ${s[t] > s[1 - t] ? 'w' : ''}">${s[t]}</span>`).join('');
+    const gm = `<span class="ov-gm">${m.done ? setsWon(m)[t] : m.stb ? 'TB' : m.g[t]}</span>`;
+    const pt = m.done ? `<span class="ov-pt done">${w === t ? 'Ganan' : ''}</span>` : `<span class="ov-pt" data-pt="${t}">${ptLabel(m, t)}</span>`;
+    return `<div class="ov-row" style="--n:${n}"><span class="ov-srv">${srv ? '<i class="ov-ball" role="img" aria-label="saca"></i>' : ''}</span><div class="ov-nm">${names}</div>${sets}${gm}${pt}</div>`;
+  };
+  const tb = m.done ? '' : m.stb ? 'Súper tie-break' : m.tb ? 'Tie-break' : '';
+  return `<div class="ov-bar">
+    <div class="ov-bar-top"><span class="ov-live"><i></i>EN VIVO</span><span class="ov-clock" data-tx="clock">${txClockStr()}</span>${tb ? `<span class="ov-sup ov-tb">${tb}</span>` : ''}${TX.showViewers ? `<span class="ov-view" title="Espectadores en vivo">${ic('i-user')}<span data-tx="views">${TX.viewers.toLocaleString('es-MX')}</span><span class="sr-only">espectadores</span></span>` : ''}</div>
+    <div class="ov-sc">${row(0)}${row(1)}</div>
+    ${off ? `<div class="ov-off ov-sup">Marcador oficial presentado por <b>${spEsc(off.n)}</b></div>` : ''}
+    ${mo.lvl && !noTag ? `<div class="ov-tag">${txMomTitle(mo.r, mo.lvl)}<small>${spEsc(txWho(mo.r))}</small></div>` : ''}
+  </div>`;
+}
+function txPrevia() {
+  const M = cbM(), main = principal();
+  const side = (s, r) => `<div class="ov-side ${r ? 'ov-r' : ''}"><div class="ov-figs">${M[s].map(txImg).join('')}</div><div class="ov-d ov-pair ${txPair(s).length > 18 ? 'long' : ''}">${spEsc(txPair(s))}<small>${M[s].map(k => '#' + CB_PL[k].rk).join(' · ')} ranking LEVA</small></div></div>`;
+  return `<div class="ov-scrim"></div><div class="ov-floor"></div>${txBrand('Previa · ' + spEsc(M.rd))}<div class="ov-duel">${side('A')}<div class="ov-vs" aria-label="contra"><i></i><span class="ov-sup">vs</span></div>${side('B', 1)}</div>
+    <div class="ov-meta"><span class="ov-sup">${spEsc(M.cat)} categoría · <b>${spEsc(M.rd)}</b> · ${txCourt()}</span>${main ? `<span class="ov-by ov-sup">Presentado por <b>${spEsc(main.n)}</b></span>` : ''}</div>`;
+}
+function txKey(kind) {
+  const { r, lvl } = txMoment(jm), sign = txSign();
+  if (!lvl || (kind === 'fixed' && Date.now() - TX.momAt > 3200)) // la escena sola de OBS muestra el momento 3 s y se esconde
+    return kind === 'preview' ? '<div class="ov-key-empty">Sin momento clave ahora.<br>Sale solo en game point, set point, match point o punto de oro.</div>' : '';
+  return `<div class="ov-key ov-play lv-${lvl}"><div class="ov-d">${txMomTitle(r, lvl)}</div><div class="ov-who">${spEsc(txWho(r))}${r.oro && lvl !== 'oro' ? '<small>Se juega con punto de oro</small>' : ''}${sign ? `<small>${capFirst(txMomTitle(r, lvl))} presentado por ${spEsc(sign.n)}</small>` : ''}</div></div>`;
+}
+function txSets() {
+  const m = jm, M = cbM(), n = m.sets.length, sp = SPN[TX.spotI % SPN.length];
+  const body = n ? (() => {
+    const last = m.sets[n - 1], wl = last[0] > last[1] ? 'A' : 'B';
+    const row = t => `<div class="ov-st" style="--n:${n}"><div class="ov-nm">${spEsc(txPair(t ? 'B' : 'A'))}</div>${m.sets.map((s, i) => `<span class="${s[t] > s[1 - t] ? 'w' : ''} ${i === n - 1 ? 'last' : ''}">${s[t]}</span>`).join('')}</div>`;
+    return `<h3 class="ov-d">Fin del set ${n}</h3>${row(0)}${row(1)}<p class="ov-sup" style="font-size:15px;color:var(--tx-2);margin-top:18px">Set para ${spEsc(txPair(wl))}</p>`;
+  })() : `<h3 class="ov-d">Set 1 en juego</h3><p class="ov-sup" style="font-size:15px;color:var(--tx-2)">${spEsc(txPair('A'))} ${m.g[0]} – ${m.g[1]} ${spEsc(txPair('B'))}</p>`;
+  return `<div class="ov-sets"><div class="ov-panel ov-chamf"><div class="ov-sup" style="font-size:15px;color:var(--gold-200)">${spEsc(M.rd)} · ${txCourt()}</div>${body}</div>
+    <div class="ov-spot ov-chamf"><span class="ov-sup">Con el apoyo de</span><div class="ov-d">${spEsc(sp.n)}</div><p>${spEsc(sp.spot || sp.offer || sp.rubro)}</p></div></div>`;
+}
+function txPausa() {
+  return `<div class="ov-pause"><div class="ov-pause-in"><svg class="sh" aria-hidden="true"><use href="#shield"/></svg><div class="ov-d">Volvemos<br><span class="gold">en un momento</span></div><div class="ov-sup">Circuito LEVA · ${txCourt()}</div></div>
+    <div class="ov-rot"><span class="ov-sup">Presentan</span><div class="ov-d" data-tx="rot">${spEsc(SPN[TX.pauseI % SPN.length].n)}</div></div></div>`;
+}
+function txFinal() {
+  const m = jm, M = cbM(), w = txWinner(m), tie = w == null, t = tie ? 0 : w, s = t ? 'B' : 'A', sign = txSign();
+  const res = m.sets.map(x => `<span class="${tie || x[t] > x[1 - t] ? '' : 'ov-l'}">${x[t]}–${x[1 - t]}</span>`).join('');
+  const lead = m.done ? 'Ganan' : tie ? 'Partido en juego' : 'Van ganando';
+  const who = tie ? `${spEsc(txPair('A'))} <span class="ov-sl">/</span> ${spEsc(txPair('B'))}` : spEsc(txPair(s)); // empatados: las dos parejas, sin ganador
+  const figs = tie ? [...M.A, ...M.B] : M[s];
+  return `<div class="ov-scrim"></div><div class="ov-floor" style="height:860px"></div>${txBrand(m.done ? 'Resultado final' : 'Resultado al momento')}
+    <div class="ov-fin"><div class="ov-duel"><div class="ov-side" style="justify-items:center"><div class="ov-figs">${figs.map(txImg).join('')}</div>
+      <div class="ov-sup ov-win">${lead} · ${spEsc(M.rd)}</div><div class="ov-d ov-pair ${tie ? 'both' : txPair(s).length > 18 ? 'long' : ''} ${tie ? '' : 'gold'}">${who}</div>
+      <div class="ov-res">${res || `<span class="ov-l">${m.g[0]}–${m.g[1]} en el primer set</span>`}</div></div></div></div>
+    <div class="ov-meta"><span class="ov-sup">${tie ? '' : `vs ${spEsc(txPair(t ? 'A' : 'B'))} · `}${spEsc(M.cat)} categoría · ${txCourt()}</span>${sign ? `<span class="ov-by ov-sup">Resultado cortesía de <b>${spEsc(sign.n)}</b></span>` : ''}</div>`;
+}
+/* kind: 'program' (sigue al panel), 'preview' (panel) o 'fixed' (una escena sola en OBS) */
+function txHTML(sc, kind) {
+  switch (sc) {
+    case 'previa': return txPrevia();
+    case 'juego': return txBar();
+    case 'clave': return (kind === 'fixed' ? '' : txBar(true)) + txKey(kind); // sin la etiqueta de la barra: el momento ya está en grande
+    case 'sets': return txSets();
+    case 'pausa': return txPausa();
+    case 'final': return txFinal();
+    default: return '';
+  }
+}
+function txRender(stage, sc, kind) {
+  if (!stage) return;
+  const html = txHTML(sc, kind);
+  let cur = $('.ov-scene:not(.out)', stage);
+  if (cur && stage._sc === sc) {
+    if (cur._html === html) return;
+    const before = $$('[data-pt]', cur).map(e => e.textContent);
+    cur.innerHTML = html; cur._html = html;
+    if (!REDUCE) $$('[data-pt]', cur).forEach((e, i) => { if (before[i] != null && before[i] !== e.textContent) e.animate([{ transform: 'rotateX(-90deg)', opacity: .3 }, { transform: 'none', opacity: 1 }], { duration: 260, easing: EASE_OUT }); });
+    return;
+  }
+  if (cur) { cur.classList.add('out'); setTimeout(() => cur.remove(), 300); }
+  stage._sc = sc;
+  const el = document.createElement('div'); el.className = 'ov-scene enter'; el.dataset.sc = sc; el.innerHTML = html; el._html = html;
+  stage.append(el); void el.offsetWidth; el.classList.remove('enter'); // sin rAF: entra igual con la pestaña en segundo plano
+}
+function txRenderAll() {
+  if (OVL != null) txRender($('#ovl-stage'), OVL === 'programa' ? TX.scene : OVL, OVL === 'programa' ? 'program' : 'fixed');
+  if ($('#txp').classList.contains('on')) { txRender($('#txp-stage'), TX.scene, 'preview'); txPanelState(); }
+}
+const txTick = () => {
+  $$('[data-tx="clock"]').forEach(e => { e.textContent = txClockStr(); });
+  // red de seguridad: si el navegador frenó el temporizador (pestaña en segundo plano), el momento clave igual dura ~3 s
+  if (OVL == null && TX.auto && TX.keyAuto && TX.scene === 'clave' && Date.now() - TX.momAt > 3400) txGo('juego');
+};
+
+/* ---- Sincronización entre pestañas (en producción: Firestore) ---- */
+const txState = () => ({ jm, match: CB.match, court: CB.court, t0: CB.t0, sp: CB.sp, scene: TX.scene, auto: TX.auto, viewers: TX.viewers,
+  showViewers: TX.showViewers, momKey: TX.momKey, momAt: TX.momAt, spotI: TX.spotI, yt: TX.yt });
+function txSync() {
+  txRenderAll();
+  if (OVL != null) return; // las escenas de OBS solo escuchan
+  const s = JSON.parse(JSON.stringify(txState()));
+  try { TXC && TXC.postMessage(s); } catch (e) { /* sin canal: queda localStorage */ }
+  try { localStorage.setItem('leva.tx', JSON.stringify(s)); } catch (e) { /* sin almacenamiento */ }
+}
+function txApply(s) {
+  if (!s || !s.jm) return;
+  const newMom = s.momAt && s.momAt !== TX.momAt;
+  jm = s.jm; Object.assign(CB, { match: s.match, court: s.court, t0: s.t0 }); Object.assign(CB.sp, s.sp);
+  Object.assign(TX, { scene: s.scene, auto: s.auto, viewers: s.viewers, showViewers: s.showViewers, momKey: s.momKey, momAt: s.momAt, spotI: s.spotI, yt: s.yt || '' });
+  txRenderAll();
+  if (newMom && OVL === 'clave') { clearTimeout(TX.keyT); TX.keyT = setTimeout(txRenderAll, 3300); } // esconde el momento en la escena sola
+}
+if (TXC) TXC.onmessage = e => {
+  if (e.data && e.data.hello) { if (OVL == null) txSync(); return; } // una escena nueva pide el estado actual
+  if (OVL != null) txApply(e.data);
+};
+addEventListener('storage', e => { if (OVL != null && e.key === 'leva.tx' && e.newValue) try { txApply(JSON.parse(e.newValue)); } catch (err) { /* dato roto: se ignora */ } });
+
+/* ---- Modo automático: decide la escena con cada punto del juez ---- */
+function txGo(sc, auto) {
+  TX.scene = sc; TX.keyAuto = !!auto && sc === 'clave'; if (sc === 'pausa') TX.pauseI++; // el automático solo deshace lo que puso él
+  txSync();
+}
+function txOnScore() {
+  if (OVL != null) return;
+  const m = jm, snap = { s: m.sets.length, p: m.p[0] + m.p[1], g: m.g[0] + m.g[1] }, prev = TX.prev; TX.prev = snap;
+  const { r, lvl } = txMoment(m), key = lvl ? lvl + r.pareja : '';
+  let newMom = false;
+  if (key !== TX.momKey) { TX.momKey = key; if (key) { TX.momAt = Date.now(); newMom = true; } }
+  if (TX.auto && prev) {
+    const moved = snap.s !== prev.s || snap.g !== prev.g || snap.p !== prev.p;
+    if (m.done) { clearTimeout(TX.keyT); txGo('final'); return; }
+    if (snap.s > prev.s) { clearTimeout(TX.keyT); TX.spotI++; txGo('sets'); return; }
+    if (newMom) {
+      txGo('clave', true); clearTimeout(TX.keyT);
+      TX.keyT = setTimeout(() => { if (TX.auto && TX.keyAuto && TX.scene === 'clave') txGo('juego'); }, 3200); // 3 s de momento y vuelve a la barra
+      return;
+    }
+    if (moved && ['previa', 'sets', 'clave', 'final'].includes(TX.scene)) { txGo('juego'); return; } // el juez cargó el siguiente punto
+  }
+  txSync();
+}
+document.addEventListener('leva:score', txOnScore);
+TX.prev = { s: jm.sets.length, p: jm.p[0] + jm.p[1], g: jm.g[0] + jm.g[1] };
+
+/* ---- Espectadores simulados ----
+   PRODUCCIÓN: YouTube Data API v3 (videos.list, part=liveStreamingDetails → concurrentViewers), consultada por una
+   Cloud Function cada 30 s; la clave vive en Secret Manager, nunca en la app ni en la escena de OBS. */
+setInterval(() => {
+  TX.viewers = Math.max(120, Math.round(TX.viewers + (Math.random() - .42) * 24));
+  $$('[data-tx="views"]').forEach(e => { e.textContent = TX.viewers.toLocaleString('es-MX'); });
+  if (OVL == null && $('#txp').classList.contains('on')) txSync();
+}, 5000);
+setInterval(txTick, 1000);
+setInterval(() => { // pausa: sponsors rotando cada 4 s
+  const el = $$('[data-tx="rot"]'); if (!el.length) return;
+  TX.pauseI++; const n = SPN[TX.pauseI % SPN.length].n;
+  el.forEach(e => { if (REDUCE) { e.textContent = n; return; } e.classList.add('swap'); setTimeout(() => { e.textContent = n; e.classList.remove('swap'); }, 420); });
+}, 4000);
+
+/* ---- Panel "Control de transmisión" ---- */
+const txBase = () => location.href.split('#')[0];
+function txPanel() {
+  $('#txp-sc').innerHTML = TX_SC.map(([k, n, d]) => `<button class="txp-b" type="button" data-sc="${k}" aria-pressed="false"><b>${n}</b><small>${d}</small></button>`).join('');
+  const M = cbM();
+  $('#txp-j').innerHTML = `<button class="btn btn-dark btn-s" type="button" data-txpt="0">+ Punto ${spEsc(txPair('A'))}</button><button class="btn btn-dark btn-s" type="button" data-txpt="1">+ Punto ${spEsc(txPair('B'))}</button><button class="btn btn-line btn-s" type="button" data-txpt="u" aria-label="Deshacer el último punto">${ic('i-undo')}</button>`;
+  $('#txp-urls').innerHTML = [['programa', 'Programa'], ...TX_SC.map(([k, n]) => [k, n])].map(([k, n]) =>
+    `<div class="txp-url"><span>${n}</span><input readonly value="${spEsc(txBase())}#overlay=${k}" aria-label="URL de la escena ${n}" spellcheck="false"><button class="btn btn-line btn-s" type="button" data-copy style="width:auto;padding:0 12px">Copiar</button></div>`).join('');
+  $('#txp-sub').textContent = `${txCourt()} · ${M.cat} · ${M.rd} · ${txPair('A')} vs ${txPair('B')}`;
+}
+function txPanelState() {
+  $$('#txp-sc [data-sc]').forEach(b => b.setAttribute('aria-pressed', b.dataset.sc === TX.scene));
+  $('#txp-on').textContent = `Al aire: ${TX_SC.find(s => s[0] === TX.scene)[1]}${TX.auto ? ' · automático' : ''}`;
+  $('#txp-auto').setAttribute('aria-checked', TX.auto); $('#txp-views').setAttribute('aria-checked', TX.showViewers);
+  $('#txp-clock').textContent = `Partido ${txClockStr()}`;
+}
+function txFitPrev() { const box = $('#txp-prev'); if (box) $('#txp-stage').style.transform = `scale(${box.clientWidth / 1920})`; }
+function openTxp() { $('#txp').classList.add('on'); txPanel(); txFitPrev(); txSync(); }
+function closeTxp() { $('#txp').classList.remove('on'); }
+async function txCopy(btn) {
+  const inp = btn.previousElementSibling; inp.focus(); inp.select();
+  let ok = false;
+  try { await navigator.clipboard.writeText(inp.value); ok = true; } catch (e) { try { ok = document.execCommand('copy'); } catch (e2) { ok = false; } }
+  $('#txp-msg').textContent = ok ? `Copiada: ${inp.value}` : 'No se pudo copiar automáticamente. La URL quedó seleccionada: cópiala con Ctrl+C.';
+  if (ok) { btn.textContent = 'Copiada'; setTimeout(() => { btn.textContent = 'Copiar'; }, 1600); }
+}
+$('#open-txp').addEventListener('click', openTxp);
+$('#txp-exit').addEventListener('click', closeTxp);
+$('#txp-sc').addEventListener('click', e => { const b = e.target.closest('[data-sc]'); if (b) { clearTimeout(TX.keyT); txGo(b.dataset.sc); } });
+$('#txp-j').addEventListener('click', e => {
+  const b = e.target.closest('[data-txpt]'); if (!b) return;
+  if (b.dataset.txpt === 'u') $('#j-undo').click(); else $$('.jt')[+b.dataset.txpt].click(); // los mismos botones del juez
+});
+$('#txp-urls').addEventListener('click', e => { const b = e.target.closest('[data-copy]'); if (b) txCopy(b); });
+$('#txp-auto').addEventListener('click', e => { TX.auto = e.currentTarget.getAttribute('aria-checked') === 'true'; txSync(); });
+$('#txp-views').addEventListener('click', e => { TX.showViewers = e.currentTarget.getAttribute('aria-checked') === 'true'; txSync(); });
+addEventListener('resize', () => { if ($('#txp').classList.contains('on')) txFitPrev(); if (OVL != null) txFitOvl(); });
+addEventListener('keydown', e => { if (e.key === 'Escape' && $('#txp').classList.contains('on')) closeTxp(); });
+
+/* ---- Escena sola para OBS: #overlay=previa|juego|clave|sets|pausa|final|programa ---- */
+function txFitOvl() { $('#ovl-stage').style.transform = `translate(-50%,-50%) scale(${Math.min(innerWidth / 1920, innerHeight / 1080)})`; }
+function txBootOverlay() {
+  document.documentElement.classList.add('ovl');
+  let s = null; try { s = JSON.parse(localStorage.getItem('leva.tx') || 'null'); } catch (e) { s = null; }
+  if (s && s.jm) txApply(s);
+  else { Object.assign(jm, { sets: [[6, 4]], g: [3, 2], p: [2, 1], server: 0 }); CB.t0 = Date.now() - 52 * 60000; } // ejemplo hasta recibir el partido real
+  txFitOvl(); txRenderAll();
+  try { TXC && TXC.postMessage({ hello: 1 }); } catch (e) { /* sin canal */ }
+}
+addEventListener('hashchange', () => { if (OVL != null || /^#overlay=/.test(location.hash)) location.reload(); });
+
+/* ---- Ver en vivo en la app: tarjeta con el reproductor de YouTube ----
+   Sin conexión a YouTube hasta que el admin pega el link y el jugador toca reproducir; si el video no carga,
+   queda el póster con el enlace para abrirlo en YouTube. */
+const ytId = u => { const s = String(u || '').trim(); const m = s.match(/(?:youtu\.be\/|[?&]v=|\/live\/|\/embed\/|\/shorts\/)([\w-]{11})/); return m ? m[1] : /^[\w-]{11}$/.test(s) ? s : null; };
+function renderYt() {
+  const M = cbM(), id = ytId(TX.yt);
+  $$('[data-yt]').forEach(box => {
+    box.innerHTML = `<div class="yt"><div class="yt-top">${id ? '<span class="tag tag-live">En vivo</span>' : '<span class="tag tag-gold">Próximamente</span>'}<b>${spEsc(txPair('A'))} vs ${spEsc(txPair('B'))}</b><small>${txCourt()} · ${spEsc(M.cat)} · ${spEsc(M.rd)} · transmisión oficial LEVA</small></div>
+      <div class="yt-frame">${COURT_SVG}<button class="yt-play" type="button" data-ytplay ${id ? '' : 'disabled'}><span class="yt-pl">${ic('i-play')}</span>${id ? 'Ver la transmisión' : 'La transmisión empieza pronto<span class="faint" style="font-weight:500">Aquí aparece el video en cuanto LEVA publique el link</span>'}</button></div></div>`;
+  });
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-ytplay]'); if (!b || b.disabled) return;
+  const id = ytId(TX.yt), frame = b.parentElement; if (!id) return;
+  let loaded = false;
+  const f = document.createElement('iframe');
+  f.title = `Transmisión en vivo: ${txPair('A')} vs ${txPair('B')}`; f.allow = 'autoplay; encrypted-media; picture-in-picture'; f.allowFullscreen = true;
+  f.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`;
+  f.addEventListener('load', () => { loaded = true; });
+  b.replaceWith(f);
+  setTimeout(() => { if (loaded || !f.isConnected) return; f.remove(); frame.insertAdjacentHTML('beforeend', `<div class="yt-play"><span>No se pudo cargar el video aquí.</span><a href="https://www.youtube.com/watch?v=${id}" target="_blank" rel="noopener">Abrir la transmisión en YouTube</a></div>`); }, 8000);
+});
+$('#acb-yt').value = TX.yt;
+$('#acb-yt-save').addEventListener('click', () => {
+  const v = $('#acb-yt').value.trim(), id = ytId(v), msg = $('#acb-yt-msg');
+  if (v && !id) { msg.textContent = 'Ese link no es de un video de YouTube. Pega el de la transmisión: youtube.com/live/… o youtu.be/…'; msg.style.color = 'var(--danger)'; return; }
+  TX.yt = v; try { localStorage.setItem('leva.tx.yt', v); } catch (e) { /* sin almacenamiento: dura esta sesión */ }
+  msg.style.color = ''; msg.textContent = v ? 'Listo: ya sale “En vivo” en Inicio y en la ficha del partido.' : 'Link borrado: la tarjeta muestra “La transmisión empieza pronto”.';
+  renderYt(); txSync();
+});
+renderYt();
+Object.assign(window.LEVA_TEST, { tx: { TX, TX_SC, txGo, txOnScore, openTxp, closeTxp, txState, renderYt, ytId, txHTML, newJudge: () => { jm = newMatch({ golden: true, superTb: true }); jHist.length = 0; CB.t0 = Date.now(); TX.prev = { s: 0, p: 0, g: 0 }; jPaint(); }, setJudge: st => { Object.assign(jm, st); jPaint(); }, jm: () => jm } });
+
 const start = location.hash.slice(1);
-if (start === 'tvcal') { go('home', 'fade'); openTvCal(); }
+if (OVL != null) txBootOverlay();
+else if (start === 'tvcal') { go('home', 'fade'); openTvCal(); }
 else if (DESK.includes(start)) { go('home', 'fade'); openDesk(start); }
 else if (start.startsWith('tv')) { go('home', 'fade'); openTv(); if (start === 'tv-call') { clearTimeout(callT); courtCall(); } if (start === 'tv-win') matchEnd(); }
 else go($('#s-' + start) ? start : 'splash', 'fade');
