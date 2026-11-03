@@ -24,8 +24,16 @@ class _DrawTabState extends ConsumerState<DrawTab> {
 
   @override
   Widget build(BuildContext context) {
-    final events =
-        ref.watch(publicEventsProvider).value ?? const <PadelEvent>[];
+    // Solo los torneos con algún draw publicado: si el próximo por fecha aún
+    // no lo tiene, no tapa a los que sí.
+    final events = [
+      for (final e
+          in ref.watch(publicEventsProvider).value ?? const <PadelEvent>[])
+        if ((ref.watch(categoriesProvider(e.id)).value ?? const []).any(
+          (c) => c.isPublishedDraw,
+        ))
+          e,
+    ];
     final event =
         events.where((e) => e.id == _eventId).firstOrNull ?? events.firstOrNull;
     final categories = event == null
