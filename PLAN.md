@@ -2,7 +2,7 @@
 
 > Estado: **propuesta para aprobación**. No hay código Flutter todavía.
 > Referencia visual oficial: `prototipo/leva-app.html` + `DESIGN.md` (tokens exactos en `.impeccable/design.json`).
-> Prototipo publicado: https://claude.ai/artifact/T5jwBXYidDQ2QyEw6Hs8J6
+> Prototipo publicado: https://leva-padel-app.web.app/prototipo/ (versión vigente). El link viejo de claude.ai (https://claude.ai/artifact/T5jwBXYidDQ2QyEw6Hs8J6) quedó congelado en una versión anterior.
 
 ---
 
