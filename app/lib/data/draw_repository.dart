@@ -377,7 +377,28 @@ class DrawRepository {
     });
 
     if (match.stage == DrawStage.group && match.groupName != null) {
-      await _fillFromGroup(eventId, match.categoryId, match.groupName!);
+      // Se pasa el resultado recién guardado: la lectura de después de la
+      // transacción puede llegar sin él y el grupo parecería sin terminar.
+      await _fillFromGroup(
+        eventId,
+        match.categoryId,
+        match.groupName!,
+        saved: StoredMatch(
+          id: match.id,
+          categoryId: match.categoryId,
+          stage: match.stage,
+          round: match.round,
+          order: match.order,
+          status: walkover ? 'walkover' : 'final',
+          groupName: match.groupName,
+          teamA: match.teamA,
+          teamB: match.teamB,
+          nextMatchId: match.nextMatchId,
+          nextSlot: match.nextSlot,
+          sets: sets,
+          winner: winner == Side.a ? 'A' : 'B',
+        ),
+      );
     }
   }
 
@@ -386,15 +407,20 @@ class DrawRepository {
   Future<void> _fillFromGroup(
     String eventId,
     String categoryId,
-    String groupName,
-  ) async {
+    String groupName, {
+    required StoredMatch saved,
+  }) async {
+    const server = GetOptions(source: Source.server);
     final all = await _matches(eventId)
         .where('categoryId', isEqualTo: categoryId)
-        .get();
+        .get(server);
     final matches = [
-      for (final d in all.docs) storedMatchFromDoc(d.id, d.data()),
+      for (final d in all.docs)
+        d.id == saved.id ? saved : storedMatchFromDoc(d.id, d.data()),
     ];
-    final group = await _groups(eventId).doc('${categoryId}_$groupName').get();
+    final group = await _groups(eventId)
+        .doc('${categoryId}_$groupName')
+        .get(server);
     final teamIds = [
       for (final t in (group.data()?['teams'] as List?) ?? const [])
         (t as Map)['regId'] as String,
