@@ -37,6 +37,17 @@ abstract final class Routes {
   static String adminRegistrations(String id) =>
       '/admin/evento/$id/inscripciones';
   static String adminDraw(String id) => '/admin/evento/$id/draw';
+  static String adminResults(String id) => '/admin/evento/$id/resultados';
+  static String judge(String eventId, String matchId) =>
+      '/admin/evento/$eventId/juez/$matchId';
+
+  /// Rutas del panel que también usa el staff (mesa de control y juez).
+  static bool staffAllowed(String location) {
+    final path = Uri.parse(location).path;
+    return path == admin ||
+        RegExp(r'^/admin/evento/[^/]+/(inscripciones|resultados|juez/[^/]+)$')
+            .hasMatch(path);
+  }
 }
 
 /// Links que se comparten fuera de la app (la web pública vive en Firebase Hosting).

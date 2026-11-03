@@ -213,6 +213,23 @@ class _CategoryDraw extends ConsumerWidget {
             ),
           ),
         );
+        children.add(
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              LevaSpace.gutter,
+              0,
+              LevaSpace.gutter,
+              LevaSpace.s6,
+            ),
+            child: GroupMatches(
+              matches: [
+                for (final m in matches)
+                  if (m.groupName == g.name) m,
+              ],
+              mineUids: {?myUid},
+            ),
+          ),
+        );
       }
     } else {
       final b = bracketFromStored(matches, mineUids: {?myUid});

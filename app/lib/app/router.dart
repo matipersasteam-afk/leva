@@ -6,6 +6,8 @@ import '../features/admin/admin_draw_screen.dart';
 import '../features/admin/admin_event_editor_screen.dart';
 import '../features/admin/admin_events_screen.dart';
 import '../features/admin/admin_registrations_screen.dart';
+import '../features/admin/admin_results_screen.dart';
+import '../features/admin/judge_screen.dart';
 import '../features/auth/email_auth_screen.dart';
 import '../features/auth/login_screen.dart';
 import '../features/auth/splash_screen.dart';
@@ -41,9 +43,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         state.uri.toString(),
       );
       if (to != null) return to;
-      // Panel de LEVA: solo admin.
+      // Panel de LEVA: admin; el staff solo mesa de control, juez e inscripciones.
       if (state.matchedLocation.startsWith(Routes.admin) &&
-          !ref.read(isAdminProvider)) {
+          !ref.read(isAdminProvider) &&
+          !(ref.read(isStaffProvider) &&
+              Routes.staffAllowed(state.matchedLocation))) {
         return Routes.home;
       }
       return null;
@@ -112,6 +116,18 @@ final routerProvider = Provider<GoRouter>((ref) {
                 path: 'inscripciones',
                 builder: (_, s) =>
                     AdminRegistrationsScreen(eventId: s.pathParameters['id']!),
+              ),
+              GoRoute(
+                path: 'resultados',
+                builder: (_, s) =>
+                    AdminResultsScreen(eventId: s.pathParameters['id']!),
+              ),
+              GoRoute(
+                path: 'juez/:match',
+                builder: (_, s) => JudgeScreen(
+                  eventId: s.pathParameters['id']!,
+                  matchId: s.pathParameters['match']!,
+                ),
               ),
             ],
           ),

@@ -182,22 +182,27 @@ BracketItem storedToItem(
   Set<String> mineUids,
 ) {
   final walkover = m.status == 'walkover';
+  final bye = walkover && !m.isPlayable;
   String caption;
   if (m.isLive) {
     caption = m.courtId == null
         ? 'En juego'
         : 'C${m.courtId!.replaceAll('c', '')}';
   } else if (m.isFinal) {
-    caption = walkover ? 'Pasa directo' : 'Finalizado';
+    caption = bye ? 'Pasa directo' : (walkover ? 'W.O.' : 'Finalizado');
   } else {
     caption =
         '${knockoutRoundName(m.round, totalRounds)}${inRound > 1 ? ' ${m.order + 1}' : ''}';
   }
-  List<int> games(int side) => [for (final s in m.sets) side == 0 ? s.a : s.b];
+  final live = liveGames(m);
+  List<int> games(int side) => [
+    for (final s in m.sets) side == 0 ? s.a : s.b,
+    if (live != null) live[side],
+  ];
   return BracketItem(
     caption: caption,
-    teamA: m.teamA?.label ?? (walkover ? 'Bye' : null),
-    teamB: m.teamB?.label ?? (walkover ? 'Bye' : null),
+    teamA: m.teamA?.label ?? (bye ? 'Bye' : null),
+    teamB: m.teamB?.label ?? (bye ? 'Bye' : null),
     scoreA: games(0),
     scoreB: games(1),
     winner: m.winner == null ? null : (m.winner == 'A' ? 0 : 1),
@@ -206,16 +211,137 @@ BracketItem storedToItem(
   );
 }
 
-/// Resultados terminados de un grupo, para la tabla.
+/// Games del set actual de un partido en juego punto a punto (null si no está
+/// en juego). Los sets ya cerrados vienen en `sets`.
+List<int>? liveGames(StoredMatch m) {
+  final g = m.liveScore?['games'];
+  if (!m.isLive || g is! List || g.length < 2) return null;
+  return [(g[0] as num).toInt(), (g[1] as num).toInt()];
+}
+
+/// Resultados terminados de un grupo (incluye W.O.), para la tabla.
 List<PlayedMatch> groupResults(List<StoredMatch> matches, String groupName) => [
   for (final m in matches)
-    if (m.groupName == groupName &&
-        m.status == 'final' &&
-        m.teamA?.regId != null &&
-        m.teamB?.regId != null)
+    if (m.groupName == groupName && m.isFinal && m.isPlayable)
       PlayedMatch(
         teamA: m.teamA!.regId!,
         teamB: m.teamB!.regId!,
         sets: List<SetScore>.from(m.sets),
       ),
 ];
+
+/// Partidos de un grupo con su resultado, debajo de la tabla.
+class GroupMatches extends StatelessWidget {
+  const GroupMatches({
+    super.key,
+    required this.matches,
+    this.mineUids = const {},
+  });
+
+  final List<StoredMatch> matches;
+  final Set<String> mineUids;
+
+  @override
+  Widget build(BuildContext context) {
+    final list = [...matches]
+      ..sort(
+        (a, b) => a.round != b.round
+            ? a.round.compareTo(b.round)
+            : a.order.compareTo(b.order),
+      );
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (final m in list)
+          _GroupMatchRow(match: m, mine: m.playerUids.any(mineUids.contains)),
+      ],
+    );
+  }
+}
+
+class _GroupMatchRow extends StatelessWidget {
+  const _GroupMatchRow({required this.match, required this.mine});
+  final StoredMatch match;
+  final bool mine;
+
+  @override
+  Widget build(BuildContext context) {
+    final m = match;
+    final winA = m.isFinal && m.winner == 'A';
+    final winB = m.isFinal && m.winner == 'B';
+    final live = liveGames(m);
+    final score = m.status == 'walkover'
+        ? 'W.O.'
+        : [
+            for (final s in m.sets) s.label,
+            if (live != null) '${live[0]}-${live[1]}',
+          ].join('  ');
+    TextStyle name(bool win) => LevaType.body(
+      size: 13.5,
+      weight: win ? 700 : 500,
+      color: win
+          ? LevaColors.gold200
+          : (m.isFinal ? LevaColors.tx2 : LevaColors.tx1),
+    );
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      decoration: const BoxDecoration(
+        border: Border(bottom: BorderSide(color: LevaColors.line)),
+      ),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 64,
+            child: m.isLive
+                ? Row(
+                    children: [
+                      const LiveDot(),
+                      const SizedBox(width: 5),
+                      Text(
+                        'VIVO',
+                        style: LevaType.support(
+                          tracking: 0.12,
+                          color: LevaColors.live,
+                          weight: 600,
+                        ),
+                      ),
+                    ],
+                  )
+                : Text(
+                    'FECHA ${m.round}',
+                    style: LevaType.support(
+                      tracking: 0.12,
+                      color: mine ? LevaColors.gold200 : LevaColors.tx3,
+                    ),
+                  ),
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  m.teamA?.label ?? '',
+                  style: name(winA),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  m.teamB?.label ?? '',
+                  style: name(winB),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+          Text(
+            score.isEmpty ? 'Por jugar' : score,
+            style: score.isEmpty
+                ? LevaType.meta
+                : LevaType.numbers(15, color: LevaColors.tx1),
+          ),
+        ],
+      ),
+    );
+  }
+}

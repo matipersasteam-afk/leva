@@ -17,7 +17,7 @@ class HomeTab extends ConsumerWidget {
     final profile = ref.watch(myProfileProvider).value;
     final events = ref.watch(publicEventsProvider);
     final invites = ref.watch(myInvitesProvider).value ?? const [];
-    final isAdmin = ref.watch(isAdminProvider);
+    final canOpenPanel = ref.watch(isStaffProvider);
 
     return ListView(
       padding: EdgeInsets.fromLTRB(
@@ -69,7 +69,7 @@ class HomeTab extends ConsumerWidget {
               ),
           ],
         ),
-        if (isAdmin) ...[
+        if (canOpenPanel) ...[
           const SizedBox(height: LevaSpace.s5),
           LevaButton(
             label: 'Panel de LEVA',

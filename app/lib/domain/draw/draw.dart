@@ -3,4 +3,5 @@ library;
 
 export 'draw_engine.dart';
 export 'draw_models.dart';
+export 'progression.dart';
 export 'standings.dart';

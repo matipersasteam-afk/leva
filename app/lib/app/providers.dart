@@ -106,6 +106,12 @@ final matchesProvider = StreamProvider.family<List<StoredMatch>, CategoryKey>(
       ref.watch(drawRepositoryProvider).watchMatches(k.eventId, k.categoryId),
 );
 
+final matchProvider =
+    StreamProvider.family<StoredMatch?, ({String eventId, String matchId})>(
+      (ref, k) =>
+          ref.watch(drawRepositoryProvider).watchMatch(k.eventId, k.matchId),
+    );
+
 final groupsProvider = StreamProvider.family<List<StoredGroup>, CategoryKey>(
   (ref, k) =>
       ref.watch(drawRepositoryProvider).watchGroups(k.eventId, k.categoryId),

@@ -372,6 +372,10 @@ class ScoreHistory {
   factory ScoreHistory.start(ScoringRules rules, {Side firstServer = Side.a}) =>
       ScoreHistory._([MatchScore.start(rules, firstServer: firstServer)]);
 
+  /// Retoma un partido ya empezado (p. ej. el juez reabre la app): sin
+  /// historial previo, así que no se puede deshacer antes de [score].
+  factory ScoreHistory.resume(MatchScore score) => ScoreHistory._([score]);
+
   final List<MatchScore> _states;
 
   MatchScore get current => _states.last;

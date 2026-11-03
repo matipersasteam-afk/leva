@@ -15,6 +15,7 @@ class AdminEventsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final events = ref.watch(allEventsProvider);
+    final isAdmin = ref.watch(isAdminProvider);
     return Scaffold(
       body: LevaCourtBackground(
         child: SafeArea(
@@ -25,7 +26,7 @@ class AdminEventsScreen extends ConsumerWidget {
                 children: [
                   LevaTopBar(
                     onBack: () => context.pop(),
-                    trailing: const LevaRoleChip('Admin'),
+                    trailing: LevaRoleChip(isAdmin ? 'Admin' : 'Staff'),
                   ),
                   Expanded(
                     child: ListView(
@@ -39,11 +40,12 @@ class AdminEventsScreen extends ConsumerWidget {
                         Text('PANEL DE', style: LevaType.xl),
                         GoldText('LEVA', style: LevaType.xl),
                         const SizedBox(height: LevaSpace.s5),
-                        LevaButton(
-                          label: 'Crear torneo',
-                          icon: Icons.add,
-                          onPressed: () => context.push(Routes.adminNewEvent),
-                        ),
+                        if (isAdmin)
+                          LevaButton(
+                            label: 'Crear torneo',
+                            icon: Icons.add,
+                            onPressed: () => context.push(Routes.adminNewEvent),
+                          ),
                         const LevaSectionHeader('Torneos'),
                         switch (events) {
                           AsyncData(:final value) when value.isEmpty =>
@@ -53,7 +55,8 @@ class AdminEventsScreen extends ConsumerWidget {
                             ),
                           AsyncData(:final value) => Column(
                             children: [
-                              for (final e in value) _AdminEventRow(event: e),
+                              for (final e in value)
+                                _AdminEventRow(event: e, isAdmin: isAdmin),
                             ],
                           ),
                           AsyncError() => const LevaNotice(
@@ -82,8 +85,9 @@ class AdminEventsScreen extends ConsumerWidget {
 }
 
 class _AdminEventRow extends StatelessWidget {
-  const _AdminEventRow({required this.event});
+  const _AdminEventRow({required this.event, required this.isAdmin});
   final PadelEvent event;
+  final bool isAdmin;
 
   @override
   Widget build(BuildContext context) {
@@ -117,16 +121,18 @@ class _AdminEventRow extends StatelessWidget {
           const SizedBox(height: LevaSpace.s3),
           Row(
             children: [
-              Expanded(
-                child: LevaButton(
-                  label: 'Editar',
-                  icon: Icons.edit_outlined,
-                  small: true,
-                  variant: LevaButtonVariant.dark,
-                  onPressed: () => context.push(Routes.adminEvent(event.id)),
+              if (isAdmin) ...[
+                Expanded(
+                  child: LevaButton(
+                    label: 'Editar',
+                    icon: Icons.edit_outlined,
+                    small: true,
+                    variant: LevaButtonVariant.dark,
+                    onPressed: () => context.push(Routes.adminEvent(event.id)),
+                  ),
                 ),
-              ),
-              const SizedBox(width: LevaSpace.s2),
+                const SizedBox(width: LevaSpace.s2),
+              ],
               Expanded(
                 child: LevaButton(
                   label: 'Inscripciones',
@@ -140,12 +146,30 @@ class _AdminEventRow extends StatelessWidget {
             ],
           ),
           const SizedBox(height: LevaSpace.s2),
-          LevaButton(
-            label: 'Draw',
-            icon: Icons.account_tree_outlined,
-            small: true,
-            variant: LevaButtonVariant.line,
-            onPressed: () => context.push(Routes.adminDraw(event.id)),
+          Row(
+            children: [
+              if (isAdmin) ...[
+                Expanded(
+                  child: LevaButton(
+                    label: 'Draw',
+                    icon: Icons.account_tree_outlined,
+                    small: true,
+                    variant: LevaButtonVariant.line,
+                    onPressed: () => context.push(Routes.adminDraw(event.id)),
+                  ),
+                ),
+                const SizedBox(width: LevaSpace.s2),
+              ],
+              Expanded(
+                child: LevaButton(
+                  label: 'Resultados',
+                  icon: Icons.scoreboard_outlined,
+                  small: true,
+                  variant: LevaButtonVariant.gold,
+                  onPressed: () => context.push(Routes.adminResults(event.id)),
+                ),
+              ),
+            ],
           ),
         ],
       ),
